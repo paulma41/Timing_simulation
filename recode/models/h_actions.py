@@ -115,9 +115,14 @@ def build_h_action_function(    *,
                 if idx < 0:
                     return None  # aucun t_r <= t_measure
                 return Events_times[idx]
-        if kernel == "event_weighted":
-            h = t: 
-        elif kernel == "action_avg":
+        def h(t):
+            gamma = p["gamma"]
+            W_eff = p["W_eff"]
+            W_rew = p["W_rew"]
+            h_output = 0
+            if kernel == "event_weighted":
+                h_output = 
+            elif kernel == "action_avg":
 
         if not t:
             return []
