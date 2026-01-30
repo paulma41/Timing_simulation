@@ -1,0 +1,1 @@
+C:/Users/paul.marcin/.conda/envs/timing-env/python.exe "c:/Users/paul.marcin/OneDrive - ICM/Experiment/Timing/simulations/test_multi_model_bo.py" --criterion laplace-jsd --N_t 0 --n-calls 150 --n-init 50 --sigma 0.1 --outer 50 --inner 50 --jobs 12 --utility-progress --max-bonus 0
