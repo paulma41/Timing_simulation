@@ -1,0 +1,168 @@
+---
+title: "Recode Progress — h_actions + base"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    number-sections: true
+---
+
+# Contexte
+
+Ce document résume ce qui a été recodé jusqu’ici dans `recode/models/h_actions.py` et la logique prévue pour `recode/design_optimizer/base.py`.
+
+- Fichier principal des modèles : `recode/models/h_actions.py`
+- Fichier utilitaire (numérique) : `recode/design_optimizer/base.py`
+
+# h_action : modèle h(t)
+
+## Objectif
+
+Le module `h_actions` définit des fonctions h(t) paramétrées, utilisées pour comparer des modèles. Les 6 modèles sont obtenus par combinaison :
+
+- **Kernel** ∈ {`event_weighted`, `action_avg`}
+- **Update mode** ∈ {`continuous`, `event`, `action`}
+
+Dans cette version, l’observation est **identity** (pas de sigmoid), donc h(t) est la sortie directe.
+
+## Notations
+
+On définit des événements d’effort et de récompense :
+
+- Effort : $(e_k, t^e_k)$
+- Reward : $(r_k, t^r_k)$
+
+Le paramètre $\gamma\in(0,1]$ contrôle la décroissance temporelle, et $W_{eff}, W_{rew}$ pondèrent effort / reward.
+
+### Opérateur de “snap”
+
+Certaines versions n’évaluent pas h(t) au temps exact t mais au **dernier événement** avant t. On définit :
+
+$$
+\tau(t) = \max\{ \tau \le t \mid \tau \in \mathcal{M} \}
+$$
+
+où $\mathcal{M}$ est un ensemble de “marks” (temps d’événements). Dans le code : `snap_times`.
+
+## Kernel 1 — event_weighted
+
+### Formule générale
+
+Pour un temps évalué $t$ (ou son version snappée $\tau(t)$),
+
+$$
+ h(t) = W_{eff} \sum_{k: t^e_k \le t} e_k \, \gamma^{(t - t^e_k)} + W_{rew} \sum_{k: t^r_k \le t} r_k \, \gamma^{(t - t^r_k)}
+$$
+
+### Variantes (update modes)
+
+- **continuous** : $t$ direct.
+- **event** : $t \leftarrow \tau(t)$ avec marks = temps Eff/Rew.
+- **action** : $t \leftarrow \tau(t)$ avec marks = temps de reward.
+
+### Label de code
+
+- Implémentation : `recode/models/h_actions.py` → `build_h_action_function(...)`, branche `kernel == "event_weighted"`.
+
+## Kernel 2 — action_avg
+
+Ce kernel moyenne les contributions par type d’action. Pour $K$ types,
+
+$$
+ h(t) = \frac{1}{K} \sum_{k=1}^K \left( W_{eff} \sum_{i\in\mathcal{E}_k} e_i \, \gamma^{(t_k - t^e_i)} + W_{rew} \sum_{i\in\mathcal{R}_k} r_i \, \gamma^{(t_k - t^r_i)} \right)
+$$
+
+où $t_k$ est le temps “snappé” spécifique au type $k$.
+
+### Variantes (update modes)
+
+- **continuous** : $t_k = t$
+- **event** : $t_k$ snappé sur Eff/Rew du type $k$
+- **action** : $t_k$ snappé sur reward du type $k$
+
+### Label de code
+
+- Implémentation : `recode/models/h_actions.py` → `build_h_action_function(...)`, branche `kernel == "action_avg"`.
+
+---
+
+# base.py : dérivation numérique + logdet
+
+Ce module sert à fournir deux outils mathématiques nécessaires à la Laplace/Chernoff :
+
+- **Jacobian numérique** (approximation de dérivées)
+- **Log‑determinant PSD** (stabilité numérique)
+
+## Jacobienne numérique
+
+### Préambule mathématique
+
+On veut approximer la jacobienne :
+
+$$
+J_{ij} = \frac{\partial f_i(\theta)}{\partial \theta_j}
+$$
+
+Dans notre cas, $f$ est une fonction de modèle (ex. h(t)) et $\theta$ sont ses paramètres. On ne dérive pas analytiquement : on utilise une **différence finie centrale** :
+
+$$
+\frac{\partial f}{\partial \theta_j} \approx \frac{f(\theta_j + \delta) - f(\theta_j - \delta)}{2\delta}
+$$
+
+### Algorithme (code)
+
+Implémentation prévue dans `recode/design_optimizer/base.py` :
+
+1. Évaluer $f(\theta)$ avec `f.eval(inputs)`
+2. Pour chaque paramètre $\theta_j$ :
+   - définir $\delta = \varepsilon \cdot \max(1, |\theta_j|)$ (on définit le pas des différences finies en le prenant proportionnel au paramètre en question)
+   - évaluer $f(\theta_j + \delta)$ et $f(\theta_j - \delta)$
+   - remplir la colonne $j$ du Jacobien
+
+### Labels de code
+
+- Fonction : `numerical_jacobian(...)`
+- Fichier : `recode/design_optimizer/base.py`
+
+## logdet_psd
+
+### Préambule mathématique
+
+On a besoin de $\log |\Sigma|$ pour les matrices de covariance (Laplace). Si $\Sigma$ est PSD (positive semi‑definite), on utilise :
+
+$$
+\log |\Sigma| = \log \det(\Sigma)
+$$
+
+Pour éviter les problèmes numériques (matrice proche singulière), on ajoute une **ridge** :
+
+$$
+\Sigma' = \Sigma + \lambda I
+$$
+
+Puis on utilise `slogdet`.
+
+### Algorithme (code)
+
+Implémentation prévue dans `recode/design_optimizer/base.py` :
+
+1. Convertir en `np.ndarray`
+2. Ajouter $\lambda I$ si ridge > 0
+3. `sign, ld = np.linalg.slogdet(A)`
+4. Si sign ≤ 0, retourner `-inf`
+
+### Labels de code
+
+- Fonction : `logdet_psd(...)`
+- Fichier : `recode/design_optimizer/base.py`
+
+---
+
+# Pourquoi on a besoin de ces fonctions
+
+- **Jacobian numérique** : utilisé pour estimer la covariance du modèle (Laplace) via linéarisation.
+- **logdet_psd** : utilisé pour calculer des divergences et des bornes (Chernoff), en restant stable numériquement.
+
+Ce sont des briques indispensables pour comparer les modèles via Laplace + Chernoff.
+
+
