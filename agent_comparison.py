@@ -373,6 +373,7 @@ def run_agent(
     obs_temp_std: float = 0.0,
     obs_bias_mean: float = 0.0,
     obs_bias_std: float = 0.0,
+    compare_old_new: bool = False,
 ) -> Dict[str, Any]:
     if VERBOSE:
         print(f"[dbg] run_agent start seed={seed} agent={agent_kind} n_jobs={n_jobs}", file=sys.stderr, flush=True)
@@ -391,6 +392,17 @@ def run_agent(
         if isinstance(f.sim_priors, dict):
             f.sim_priors["obs_temp"] = {"dist": "Normal", "mu": obs_temp, "sigma": 0.0}
             f.sim_priors["obs_bias"] = {"dist": "Normal", "mu": obs_bias, "sigma": 0.0}
+    if compare_old_new:
+        for f in models:
+            f.parameters["h0"] = 0.0
+            f.parameters["W_time"] = 0.0
+            if isinstance(f.sim_priors, dict):
+                if "h0" in f.sim_priors:
+                    f.sim_priors["h0"]["sigma"] = 0.0
+                    f.sim_priors["h0"]["mu"]=0
+                if "W_time" in f.sim_priors:
+                    f.sim_priors["W_time"]["sigma"] = 0.0
+                    f.sim_priors["W_time"]["mu"] = 0.0
     Eff_pool, Rew_pool = make_demo_pools()  # non utilisé ici mais gardé pour compat
 
     progress_sent = 0
@@ -605,6 +617,7 @@ def _run_task(task: Dict[str, Any]) -> Dict[str, Any]:
             obs_temp_std=task.get("obs_temp_std", 0.0),
             obs_bias_mean=task.get("obs_bias_mean", 0.0),
             obs_bias_std=task.get("obs_bias_std", 0.0),
+            compare_old_new=task.get("compare_old_new", False),
         ),
     }
 
@@ -622,8 +635,8 @@ if __name__ == "__main__":
     parser.add_argument("--agents", type=str, default="markov,magneto", help="liste d'agents (markov,magneto)")
     parser.add_argument("--t-max", type=float, default=5400.0, help="t_max du bloc libre")
     parser.add_argument("--t-step", type=float, default=30.0, help="pas des temps fixes du bloc libre")
-    parser.add_argument("--n-bonus", type=int, default=18, help="nombre de bonus du bloc libre")
-    parser.add_argument("--n-t", type=int, default=18, help="nombre de temps de mesure du bloc libre")
+    parser.add_argument("--n-bonus", type=int, default=0, help="nombre de bonus du bloc libre")
+    parser.add_argument("--n-t", type=int, default=0, help="nombre de temps de mesure du bloc libre")
     parser.add_argument("--forced-block", action="store_true", help="active un bloc force avant le bloc libre")
     parser.add_argument("--forced-t-max", type=float, default=900.0, help="t_max du bloc force")
     parser.add_argument("--forced-t-step", type=float, default=60.0, help="pas des temps fixes du bloc force")
@@ -649,6 +662,11 @@ if __name__ == "__main__":
     parser.add_argument("--obs-temp-std", type=float, default=0.9, help="ecart-type de la temperature sigmoide")
     parser.add_argument("--obs-bias-mean", type=float, default=-0.0699, help="moyenne du biais sigmoide")
     parser.add_argument("--obs-bias-std", type=float, default=0.46, help="ecart-type du biais sigmoide")
+    parser.add_argument(
+        "--compare-old-new",
+        action="store_true",
+        help="fixe h0 et W_time a 0 (et sigma=0) pour comparaison avec la version recode",
+    )
     parser.add_argument("--workers", type=int, default=0, help="max workers pour la parallelisation (0 = auto)")
     args = parser.parse_args()
 
@@ -685,6 +703,7 @@ if __name__ == "__main__":
             "obs_temp_std": float(args.obs_temp_std),
             "obs_bias_mean": float(args.obs_bias_mean),
             "obs_bias_std": float(args.obs_bias_std),
+            "compare_old_new": bool(args.compare_old_new),
         }
         for ak in agent_kinds
         for sd in seeds

@@ -44,7 +44,7 @@ def numerical_jacobian(
 
         J[:, j] = (np.asarray(y_plus_list) - np.asarray(y_minus_list)) / (2.0 * delta)
 
-    return J.tolist()
+    return J
 
 
 def logdet_psd(M: List[List[float]], ridge: float = 1e-12) -> float:

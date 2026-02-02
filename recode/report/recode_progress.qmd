@@ -7,70 +7,342 @@ format:
     number-sections: true
 ---
 
+
+
+# Préambule global : objectif et méthode
+
+
+
+## Objectif global
+
+
+
+Le but du programme est d'evaluer la **séparabilite a priori entre modèles** (comparaison de familles de h(t)) pour un design donné, via une borne de type **Chernoff**. 
+L'idée est de produire, pour chaque modèle, une **distribution prédictive** de la sortie $y$ (mesures aux temps de mesure), puis de comparer ces distributions deux à deux, pour estimer la probabilité d'erreur de classification (quelle est la probabilité de classifier le modèle en $j$ sachant que le modèle est généré par $i$ ?).
+
+Pour ce faire, on utilise la méthode décrite dans Optimizing Experimental Design for Comparing Models of Brain Function (de Jean).
+
+### Résummé des maths du papier
+
+#### Notations:
+
+- **Espace des modèles** : $\mathcal M=\{m_1,\dots,m_{\bar M}\}$ avec un **a priori sur les modèles** $p(m)$.
+- **Design / manipulation expérimentale** : $d\in\mathcal D$.
+- **Données observées** : $y\in\mathcal Y$.
+- **Paramètres latents** d’un modèle $m$ : $\theta$.
+
+#### Vraisemblances, priors, evidence
+- Vraisemblance : $p(y\mid \vartheta,m,u)$.
+- Prior paramètres : $p(\vartheta\mid m,u)$ (souvent $u$ n’entre pas dans le prior, mais ils laissent la dépendance possible).
+- **Evidence / vraisemblance marginale** (aussi “model evidence”) :
+$$
+p(y\mid m,u)=\int p(y\mid \vartheta,m,u)\,p(\vartheta\mid m,u)\,d\vartheta.
+$$
+
+- **Posterior sur les modèles** (à quel point un modèle donné $m$ est plausible conditionnellement aux données et le design) :
+$$
+p(m\mid y,u)=\frac{p(m)\,p(y\mid m,u)}{p(y\mid u)},\qquad
+p(y\mid u)=\sum_{m\in\mathcal M} p(m)\,p(y\mid m,u).
+$$
+
+#### Décision Bayésienne avec erreur 0-1 : 
+
+On formalise la **sélection de modèle** comme une décision $\hat m(y)\in\mathcal M$, avec une **perte 0–1** (erreur si on ne choisit pas le “vrai” modèle générateur $m$) :
+$$
+e(m,\hat m)=\begin{cases}
+1 & \text{si }\hat m\neq m\\
+0 & \text{sinon.}
+\end{cases}
+$$
+
+Alors, étant données des données $y$, la règle optimale de classfication de modèle (au sens du risque posterior) est le **MAP** :
+$$
+\hat m(y)=\arg\min_{\hat m}\ \mathbb E_{p(m\mid y,u)}[e(m,\hat m)]
+=\arg\max_{m\in\mathcal M} p(m\mid y,u).
+$$
+
+::: {.callout-note}
+Espérance prise sur la distribution des posteriors sur les modèles, c'est à dire la plausibilité de chaque modèle + maximiser $e(m,\hat m)$ revient à minimiser $1-e(m,\hat m$) ).
+:::
+
+La **proba d’erreur conditionnelle** (étant donné $y,u$ et en appliquant la règle optimale) devient :
+
+
+$$
+P_e(y,u)=p(\hat e=1\mid y,u)=1-p(\hat m(y)\mid y,u)=1-\max_m p(m\mid y,u).
+$$
+
+::: {.callout-note}
+Explication : $p(\hat m(y)\mid y,u)$ correspond à la probabilité que le modèle choisit par la règle précédente soit le vrai modèle.
+:::
+
+#### Objectif d’optimal design : minimiser l’erreur *attendue* avant d’observer $y$
+
+Comme $y$ n’est pas encore observé au moment de choisir $u$, on peut définir le **design risk** comme l’erreur moyenne sur $y$ tiré de la prédiction marginale $p(y\mid u)$. 
+
+Le **design optimal** est alors définit car celui minimisant le design risk :
+$$
+u^\star=\arg\min_u \ \mathbb E_{p(y\mid u)}[\hat e]
+=\arg\min_u\ p(\hat e=1\mid u).
+$$
+
+Avec
+$$
+p(\hat e=1\mid u)=\int_{\mathcal Y} p(\hat e=1\mid y,u)\,p(y\mid u)\,dy
+=1-\int_{\mathcal Y}\max_m \big[p(m)\,p(y\mid m,u)\big]\,dy.
+$$
+
+
+Point clé : cette quantité est **difficile** à calculer (intégrale + max sur les modèles). Il convient alors d'en trouver une **borne information-théorique**.
+
+::: {.callout-note}
+Notons que la prédiction marginale des données par rapport au design dépend de la distribution que l'on donne sur les modèles !
+:::
+
+#### Choix de la borne
+
+On simplifie : on va essayer de borner 2 à 2.
+$$
+E = \{\hat m(y) \ne m^*\} = \bigcup_{j\ne m^*} E_j,
+$$
+ou $E_j$ = "on choisit $j$ alors que $m^*$ est vrai". Par l'inegalite de Boole (union bound),
+$$
+P(E) \le \sum_{j\ne m^*} P(E_j).
+$$
+Donc si chaque probabilite d'erreur binaire $P(E_j)$ est petite, leur somme (et donc l'erreur totale) l'est aussi. C'est ce qui justifie le recours aux bornes pairwise.
+
+
+Pour ce faire, on calcule la borne de Chernoff:
+
+On compare deux modeles avec densites $p_0(y)$ et $p_1(y)$, et des prior egaux $1/2$.
+
+L'erreur minimale (decision bayesienne optimale) s'ecrit :
+
+$$
+P_{err} = \tfrac{1}{2} \int \min(p_0(y), p_1(y))\,dy
+$$
+
+Pour tout $s \in [0,1]$, on a l'inegalite :
+
+$$
+\min(a,b) \le a^{1-s} b^s
+$$
+
+En l'appliquant sous l'integrale :
+
+$$
+P_{err} \le \tfrac{1}{2} \int p_0(y)^{1-s} p_1(y)^s\,dy
+$$
+
+En minimisant sur $s$ (equivalent a maximiser l'opposant du log), on obtient la borne de Chernoff :
+
+$$
+P_{err} \le \tfrac{1}{2} \exp(-C)
+$$
+
+ou
+
+$$
+C = \max_{s \in [0,1]} \; -\log \int p_0(y)^{1-s} p_1(y)^s\,dy
+$$
+
+Ce $C$ est le **Chernoff information**. Plus $C$ est grand, plus les distributions sont separables.
+
+#### Cas gaussien (formule utilisee dans le code)
+
+Si $p_0, p_1$ sont gaussiennes $\mathcal{N}(\mu_0, \Sigma_0)$ et $\mathcal{N}(\mu_1, \Sigma_1)$ :
+
+$$
+C_s = \tfrac{1}{2}\Big( s(1-s)\,\Delta\mu^T \Sigma_s^{-1} \Delta\mu
++ \log|\Sigma_s| - (1-s)\log|\Sigma_0| - s\log|\Sigma_1| \Big)
+$$
+
+avec $\Delta\mu = \mu_1 - \mu_0$ et $\Sigma_s = (1-s)\Sigma_0 + s\Sigma_1$. On prend :
+
+$$
+C = \max_{s \in [0,1]} C_s
+$$
+
+
+## Methode (vue d'ensemble)
+
+
+
+1. **Definir les modeles h(t)**  
+
+   Les modeles sont definis dans `recode/models/h_actions.py` (kernels + update modes). Chaque modele est une fonction parametrique `Function` avec `parameters`, `sim_priors`, `eval(...)` et optionnellement `jacobian(...)`.
+
+
+
+2. **Construire un design**  
+
+   Le design (inputs) contient `t_measure` ainsi que les evenements Eff_/Rew_ (et actions si necessaire). L'evaluation d'un modele fournit un vecteur **y** de taille = nombre de temps de mesure.
+
+
+
+3. **Approximation de Laplace (predictive prior)**  
+
+   - **Moyenne predictive** :  
+
+    $$
+     \mu_y = g(\mu_\theta)
+    $$
+
+     ou `g = func.eval(design_inputs)` en fixant les params au prior (`sim_priors`).
+
+   - **Covariance predictive** (linearisation) :  
+
+    $$
+     V_y = R + J \Sigma J^\top
+    $$
+
+     ou $R = \sigma^2 I$, $J = \partial g / \partial \theta$, $\Sigma = \mathrm{diag}(var_{prior})$.
+
+   - `J` est obtenu par `func.jacobian(...)` si disponible, sinon par `numerical_jacobian(...)` (voir `recode/design_optimizer/base.py`).
+
+
+
+4. **Score de séparabilite (Chernoff)**  
+
+   Les distributions predictive de chaque modele (gaussiennes) sont comparees deux a deux pour obtenir une mesure de separabilite globale du design.  
+
+   Cette partie sera implementee dans `recode/design_optimizer/chernoff.py`.
+
+
+
+## Pourquoi Laplace ?
+
+
+
+La borne de Chernoff est **fermée** pour des distributions gaussiennes. Laplace donne une approximation gaussienne rapide de la predictive, ce qui rend le score de separabilite calculable et stable numeriquement.
+
+
+
 # Contexte
+
+
 
 Ce document résume ce qui a été recodé jusqu’ici dans `recode/models/h_actions.py` et la logique prévue pour `recode/design_optimizer/base.py`.
 
+
+
 - Fichier principal des modèles : `recode/models/h_actions.py`
+
 - Fichier utilitaire (numérique) : `recode/design_optimizer/base.py`
+
+- Fichier Laplace (predictive) : `recode/design_optimizer/laplace.py`
+
+
 
 # h_action : modèle h(t)
 
+
+
 ## Objectif
+
+
 
 Le module `h_actions` définit des fonctions h(t) paramétrées, utilisées pour comparer des modèles. Les 6 modèles sont obtenus par combinaison :
 
+
+
 - **Kernel** ∈ {`event_weighted`, `action_avg`}
+
 - **Update mode** ∈ {`continuous`, `event`, `action`}
+
+
 
 Dans cette version, l’observation est **identity** (pas de sigmoid), donc h(t) est la sortie directe.
 
+
+
 ## Notations
+
+
 
 On définit des événements d’effort et de récompense :
 
+
+
 - Effort : $(e_k, t^e_k)$
+
 - Reward : $(r_k, t^r_k)$
+
+
 
 Le paramètre $\gamma\in(0,1]$ contrôle la décroissance temporelle, et $W_{eff}, W_{rew}$ pondèrent effort / reward.
 
+
+
 ### Opérateur de “snap”
 
+
+
 Certaines versions n’évaluent pas h(t) au temps exact t mais au **dernier événement** avant t. On définit :
+
+
 
 $$
 \tau(t) = \max\{ \tau \le t \mid \tau \in \mathcal{M} \}
 $$
 
+
+
 où $\mathcal{M}$ est un ensemble de “marks” (temps d’événements). Dans le code : `snap_times`.
+
+
 
 ## Kernel 1 — event_weighted
 
+
+
 ### Formule générale
 
+
+
 Pour un temps évalué $t$ (ou son version snappée $\tau(t)$),
+
+
 
 $$
  h(t) = W_{eff} \sum_{k: t^e_k \le t} e_k \, \gamma^{(t - t^e_k)} + W_{rew} \sum_{k: t^r_k \le t} r_k \, \gamma^{(t - t^r_k)}
 $$
 
+
+
 ### Variantes (update modes)
 
+
+
 - **continuous** : $t$ direct.
+
 - **event** : $t \leftarrow \tau(t)$ avec marks = temps Eff/Rew.
+
 - **action** : $t \leftarrow \tau(t)$ avec marks = temps de reward.
+
+
 
 ### Label de code
 
+
+
 - Implémentation : `recode/models/h_actions.py` → `build_h_action_function(...)`, branche `kernel == "event_weighted"`.
+
+
 
 ## Kernel 2 — action_avg
 
+
+
 Ce kernel moyenne les contributions par type d’action. Pour $K$ types,
+
+
 
 $$
  h(t) = \frac{1}{K} \sum_{k=1}^K \left( W_{eff} \sum_{i\in\mathcal{E}_k} e_i \, \gamma^{(t_k - t^e_i)} + W_{rew} \sum_{i\in\mathcal{R}_k} r_i \, \gamma^{(t_k - t^r_i)} \right)
 $$
+
+
 
 où $t_k$ est le temps “snappé” spécifique au type $k$.
 
@@ -80,28 +352,44 @@ où $t_k$ est le temps “snappé” spécifique au type $k$.
 - **event** : $t_k$ snappé sur Eff/Rew du type $k$
 - **action** : $t_k$ snappé sur reward du type $k$
 
+
 ### Label de code
+
 
 - Implémentation : `recode/models/h_actions.py` → `build_h_action_function(...)`, branche `kernel == "action_avg"`.
 
+
 ---
+
+
 
 # base.py : dérivation numérique + logdet
 
+
+
 Ce module sert à fournir deux outils mathématiques nécessaires à la Laplace/Chernoff :
 
+
+
 - **Jacobian numérique** (approximation de dérivées)
+
 - **Log‑determinant PSD** (stabilité numérique)
+
 
 ## Jacobienne numérique
 
+
 ### Préambule mathématique
 
+
 On veut approximer la jacobienne :
+
 
 $$
 J_{ij} = \frac{\partial f_i(\theta)}{\partial \theta_j}
 $$
+
+
 
 Dans notre cas, $f$ est une fonction de modèle (ex. h(t)) et $\theta$ sont ses paramètres. On ne dérive pas analytiquement : on utilise une **différence finie centrale** :
 
@@ -109,24 +397,34 @@ $$
 \frac{\partial f}{\partial \theta_j} \approx \frac{f(\theta_j + \delta) - f(\theta_j - \delta)}{2\delta}
 $$
 
+
 ### Algorithme (code)
 
 Implémentation prévue dans `recode/design_optimizer/base.py` :
 
 1. Évaluer $f(\theta)$ avec `f.eval(inputs)`
+
 2. Pour chaque paramètre $\theta_j$ :
+
    - définir $\delta = \varepsilon \cdot \max(1, |\theta_j|)$ (on définit le pas des différences finies en le prenant proportionnel au paramètre en question)
+
    - évaluer $f(\theta_j + \delta)$ et $f(\theta_j - \delta)$
+
    - remplir la colonne $j$ du Jacobien
+
+
 
 ### Labels de code
 
 - Fonction : `numerical_jacobian(...)`
+
 - Fichier : `recode/design_optimizer/base.py`
 
 ## logdet_psd
 
+
 ### Préambule mathématique
+
 
 On a besoin de $\log |\Sigma|$ pour les matrices de covariance (Laplace). Si $\Sigma$ est PSD (positive semi‑definite), on utilise :
 
@@ -144,12 +442,16 @@ Puis on utilise `slogdet`.
 
 ### Algorithme (code)
 
+
+
 Implémentation prévue dans `recode/design_optimizer/base.py` :
 
 1. Convertir en `np.ndarray`
 2. Ajouter $\lambda I$ si ridge > 0
 3. `sign, ld = np.linalg.slogdet(A)`
 4. Si sign ≤ 0, retourner `-inf`
+
+
 
 ### Labels de code
 
@@ -158,11 +460,87 @@ Implémentation prévue dans `recode/design_optimizer/base.py` :
 
 ---
 
+
+
 # Pourquoi on a besoin de ces fonctions
 
 - **Jacobian numérique** : utilisé pour estimer la covariance du modèle (Laplace) via linéarisation.
+
 - **logdet_psd** : utilisé pour calculer des divergences et des bornes (Chernoff), en restant stable numériquement.
 
 Ce sont des briques indispensables pour comparer les modèles via Laplace + Chernoff.
+
+
+
+---
+
+
+
+# laplace.py : predictive prior via Laplace
+
+
+
+## Objectif
+
+
+
+Construire la distribution predictive de chaque modele (gaussienne) pour un design donne.  
+
+On calcule `mu_y` et `V_y` via linearisation (Jacobien) et prior sur les parametres.
+
+
+
+## Etapes (code)
+
+
+
+1. **Recuperer le prior parametres**  
+
+   - `mu, var, names = _prior_mean_and_var(func)`  
+
+   - `Sigma = diag(var)`
+
+
+
+2. **Evaluer la moyenne predictive**  
+
+   - `func.parameters.update(params)` avec `params = dict(zip(names, mu))`  
+
+   - `y = func.eval(design_inputs)`
+
+
+
+3. **Calculer le Jacobien**  
+
+   - `J = func.jacobian(...)` si disponible  
+
+   - sinon `numerical_jacobian(func, design_inputs, params, eps)`
+
+
+
+4. **Former la covariance predictive**  
+
+   - `R = sigma^2 I`  
+
+   - `Vy = R + J @ Sigma @ J.T`
+
+
+
+5. **Aggregation multi-modeles**  
+
+   - `laplace_predictive(...)` applique ce calcul a tous les modeles, en sequentiel ou parallele.
+
+
+
+## Labels de code
+
+
+
+- Fonction : `_laplace_prior_predictive_gaussian(...)`
+
+- Orchestration : `laplace_predictive(...)`
+
+- Fichier : `recode/design_optimizer/laplace.py`
+
 
 

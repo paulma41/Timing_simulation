@@ -28,28 +28,28 @@
 ### 1) `recode/models/h_actions.py`
 - [x] Imports and basic types started.
 - [x] Minimal `Function` class (name, parameters, sim_priors, _evaluator, eval(inputs)).
-- [ ] Implement helpers:
+- [x] Implement helpers:
   - `_snap_times`, `_snap_times_or_default`.
   - `_eval_event_weighted` (NumPy only).
   - `_eval_action_avg` (NumPy only).
-- [ ] Implement `build_h_action_function(...)`:
+- [x] Implement `build_h_action_function(...)`:
   - kernels: `event_weighted`, `action_avg`.
   - updates: `continuous`, `event`, `action`.
   - observation: `identity`, `sigmoid`.
   - analytic Jacobian (NumPy only) + precomputation.
 
 ### 2) `recode/design_optimizer/base.py`
-- [ ] Port `numerical_jacobian` (NumPy only).
-- [ ] Port `logdet_psd` (NumPy only).
-- [ ] Keep minimal helpers used by Laplace/Chernoff.
+- [x] Port `numerical_jacobian` (NumPy only).
+- [x] Port `logdet_psd` (NumPy only).
+- [x] Keep minimal helpers used by Laplace/Chernoff.
 
 ### 3) `recode/design_optimizer/laplace.py`
-- [ ] Port Laplace prior predictive:
+- [x] Port Laplace prior predictive:
   - `_prior_mean_and_var` (using `sim_priors`).
   - `_laplace_prior_predictive_gaussian` (NumPy only).
-- [ ] Parallel Laplace for models using `ProcessPoolExecutor` + `cloudpickle`.
+- [x] Parallel Laplace for models using `ProcessPoolExecutor` + `cloudpickle`.
 - [ ] Chernoff metrics now live in `recode/design_optimizer/chernoff.py` (pairwise C, bounds, maximin).
-- [ ] Public API: `laplace_predictive(...)` (mu, Vy, optional lowrank).
+- [x] Public API: `laplace_predictive(...)` (mu, Vy, optional lowrank).
 
 ### 4) `recode/design/measurement.py`
 - [ ] `sample_measurement_times` (Eff then Rew then uniform; return sources option).

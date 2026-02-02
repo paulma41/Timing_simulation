@@ -76,42 +76,57 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#contexte" id="toc-contexte" class="nav-link active" data-scroll-target="#contexte"><span class="header-section-number">1</span> Contexte</a></li>
-  <li><a href="#h_action-modèle-ht" id="toc-h_action-modèle-ht" class="nav-link" data-scroll-target="#h_action-modèle-ht"><span class="header-section-number">2</span> h_action : modèle h(t)</a>
+  <li><a href="#préambule-global-objectif-et-méthode" id="toc-préambule-global-objectif-et-méthode" class="nav-link active" data-scroll-target="#préambule-global-objectif-et-méthode"><span class="header-section-number">1</span> Préambule global : objectif et méthode</a>
   <ul class="collapse">
-  <li><a href="#objectif" id="toc-objectif" class="nav-link" data-scroll-target="#objectif"><span class="header-section-number">2.1</span> Objectif</a></li>
-  <li><a href="#notations" id="toc-notations" class="nav-link" data-scroll-target="#notations"><span class="header-section-number">2.2</span> Notations</a>
+  <li><a href="#objectif-global" id="toc-objectif-global" class="nav-link" data-scroll-target="#objectif-global"><span class="header-section-number">1.1</span> Objectif global</a>
   <ul class="collapse">
-  <li><a href="#opérateur-de-snap" id="toc-opérateur-de-snap" class="nav-link" data-scroll-target="#opérateur-de-snap"><span class="header-section-number">2.2.1</span> Opérateur de “snap”</a></li>
+  <li><a href="#résummé-des-maths-du-papier" id="toc-résummé-des-maths-du-papier" class="nav-link" data-scroll-target="#résummé-des-maths-du-papier"><span class="header-section-number">1.1.1</span> Résummé des maths du papier</a></li>
   </ul></li>
-  <li><a href="#kernel-1-event_weighted" id="toc-kernel-1-event_weighted" class="nav-link" data-scroll-target="#kernel-1-event_weighted"><span class="header-section-number">2.3</span> Kernel 1 — event_weighted</a>
-  <ul class="collapse">
-  <li><a href="#formule-générale" id="toc-formule-générale" class="nav-link" data-scroll-target="#formule-générale"><span class="header-section-number">2.3.1</span> Formule générale</a></li>
-  <li><a href="#variantes-update-modes" id="toc-variantes-update-modes" class="nav-link" data-scroll-target="#variantes-update-modes"><span class="header-section-number">2.3.2</span> Variantes (update modes)</a></li>
-  <li><a href="#label-de-code" id="toc-label-de-code" class="nav-link" data-scroll-target="#label-de-code"><span class="header-section-number">2.3.3</span> Label de code</a></li>
+  <li><a href="#methode-vue-densemble" id="toc-methode-vue-densemble" class="nav-link" data-scroll-target="#methode-vue-densemble"><span class="header-section-number">1.2</span> Methode (vue d’ensemble)</a></li>
+  <li><a href="#pourquoi-laplace" id="toc-pourquoi-laplace" class="nav-link" data-scroll-target="#pourquoi-laplace"><span class="header-section-number">1.3</span> Pourquoi Laplace ?</a></li>
   </ul></li>
-  <li><a href="#kernel-2-action_avg" id="toc-kernel-2-action_avg" class="nav-link" data-scroll-target="#kernel-2-action_avg"><span class="header-section-number">2.4</span> Kernel 2 — action_avg</a>
+  <li><a href="#contexte" id="toc-contexte" class="nav-link" data-scroll-target="#contexte"><span class="header-section-number">2</span> Contexte</a></li>
+  <li><a href="#h_action-modèle-ht" id="toc-h_action-modèle-ht" class="nav-link" data-scroll-target="#h_action-modèle-ht"><span class="header-section-number">3</span> h_action : modèle h(t)</a>
   <ul class="collapse">
-  <li><a href="#variantes-update-modes-1" id="toc-variantes-update-modes-1" class="nav-link" data-scroll-target="#variantes-update-modes-1"><span class="header-section-number">2.4.1</span> Variantes (update modes)</a></li>
-  <li><a href="#label-de-code-1" id="toc-label-de-code-1" class="nav-link" data-scroll-target="#label-de-code-1"><span class="header-section-number">2.4.2</span> Label de code</a></li>
+  <li><a href="#objectif" id="toc-objectif" class="nav-link" data-scroll-target="#objectif"><span class="header-section-number">3.1</span> Objectif</a></li>
+  <li><a href="#notations-1" id="toc-notations-1" class="nav-link" data-scroll-target="#notations-1"><span class="header-section-number">3.2</span> Notations</a>
+  <ul class="collapse">
+  <li><a href="#opérateur-de-snap" id="toc-opérateur-de-snap" class="nav-link" data-scroll-target="#opérateur-de-snap"><span class="header-section-number">3.2.1</span> Opérateur de “snap”</a></li>
   </ul></li>
+  <li><a href="#kernel-1-event_weighted" id="toc-kernel-1-event_weighted" class="nav-link" data-scroll-target="#kernel-1-event_weighted"><span class="header-section-number">3.3</span> Kernel 1 — event_weighted</a>
+  <ul class="collapse">
+  <li><a href="#formule-générale" id="toc-formule-générale" class="nav-link" data-scroll-target="#formule-générale"><span class="header-section-number">3.3.1</span> Formule générale</a></li>
+  <li><a href="#variantes-update-modes" id="toc-variantes-update-modes" class="nav-link" data-scroll-target="#variantes-update-modes"><span class="header-section-number">3.3.2</span> Variantes (update modes)</a></li>
+  <li><a href="#label-de-code" id="toc-label-de-code" class="nav-link" data-scroll-target="#label-de-code"><span class="header-section-number">3.3.3</span> Label de code</a></li>
   </ul></li>
-  <li><a href="#base.py-dérivation-numérique-logdet" id="toc-base.py-dérivation-numérique-logdet" class="nav-link" data-scroll-target="#base.py-dérivation-numérique-logdet"><span class="header-section-number">3</span> base.py : dérivation numérique + logdet</a>
+  <li><a href="#kernel-2-action_avg" id="toc-kernel-2-action_avg" class="nav-link" data-scroll-target="#kernel-2-action_avg"><span class="header-section-number">3.4</span> Kernel 2 — action_avg</a>
   <ul class="collapse">
-  <li><a href="#jacobienne-numérique" id="toc-jacobienne-numérique" class="nav-link" data-scroll-target="#jacobienne-numérique"><span class="header-section-number">3.1</span> Jacobienne numérique</a>
-  <ul class="collapse">
-  <li><a href="#préambule-mathématique" id="toc-préambule-mathématique" class="nav-link" data-scroll-target="#préambule-mathématique"><span class="header-section-number">3.1.1</span> Préambule mathématique</a></li>
-  <li><a href="#algorithme-code" id="toc-algorithme-code" class="nav-link" data-scroll-target="#algorithme-code"><span class="header-section-number">3.1.2</span> Algorithme (code)</a></li>
-  <li><a href="#labels-de-code" id="toc-labels-de-code" class="nav-link" data-scroll-target="#labels-de-code"><span class="header-section-number">3.1.3</span> Labels de code</a></li>
-  </ul></li>
-  <li><a href="#logdet_psd" id="toc-logdet_psd" class="nav-link" data-scroll-target="#logdet_psd"><span class="header-section-number">3.2</span> logdet_psd</a>
-  <ul class="collapse">
-  <li><a href="#préambule-mathématique-1" id="toc-préambule-mathématique-1" class="nav-link" data-scroll-target="#préambule-mathématique-1"><span class="header-section-number">3.2.1</span> Préambule mathématique</a></li>
-  <li><a href="#algorithme-code-1" id="toc-algorithme-code-1" class="nav-link" data-scroll-target="#algorithme-code-1"><span class="header-section-number">3.2.2</span> Algorithme (code)</a></li>
-  <li><a href="#labels-de-code-1" id="toc-labels-de-code-1" class="nav-link" data-scroll-target="#labels-de-code-1"><span class="header-section-number">3.2.3</span> Labels de code</a></li>
+  <li><a href="#variantes-update-modes-1" id="toc-variantes-update-modes-1" class="nav-link" data-scroll-target="#variantes-update-modes-1"><span class="header-section-number">3.4.1</span> Variantes (update modes)</a></li>
+  <li><a href="#label-de-code-1" id="toc-label-de-code-1" class="nav-link" data-scroll-target="#label-de-code-1"><span class="header-section-number">3.4.2</span> Label de code</a></li>
   </ul></li>
   </ul></li>
-  <li><a href="#pourquoi-on-a-besoin-de-ces-fonctions" id="toc-pourquoi-on-a-besoin-de-ces-fonctions" class="nav-link" data-scroll-target="#pourquoi-on-a-besoin-de-ces-fonctions"><span class="header-section-number">4</span> Pourquoi on a besoin de ces fonctions</a></li>
+  <li><a href="#base.py-dérivation-numérique-logdet" id="toc-base.py-dérivation-numérique-logdet" class="nav-link" data-scroll-target="#base.py-dérivation-numérique-logdet"><span class="header-section-number">4</span> base.py : dérivation numérique + logdet</a>
+  <ul class="collapse">
+  <li><a href="#jacobienne-numérique" id="toc-jacobienne-numérique" class="nav-link" data-scroll-target="#jacobienne-numérique"><span class="header-section-number">4.1</span> Jacobienne numérique</a>
+  <ul class="collapse">
+  <li><a href="#préambule-mathématique" id="toc-préambule-mathématique" class="nav-link" data-scroll-target="#préambule-mathématique"><span class="header-section-number">4.1.1</span> Préambule mathématique</a></li>
+  <li><a href="#algorithme-code" id="toc-algorithme-code" class="nav-link" data-scroll-target="#algorithme-code"><span class="header-section-number">4.1.2</span> Algorithme (code)</a></li>
+  <li><a href="#labels-de-code" id="toc-labels-de-code" class="nav-link" data-scroll-target="#labels-de-code"><span class="header-section-number">4.1.3</span> Labels de code</a></li>
+  </ul></li>
+  <li><a href="#logdet_psd" id="toc-logdet_psd" class="nav-link" data-scroll-target="#logdet_psd"><span class="header-section-number">4.2</span> logdet_psd</a>
+  <ul class="collapse">
+  <li><a href="#préambule-mathématique-1" id="toc-préambule-mathématique-1" class="nav-link" data-scroll-target="#préambule-mathématique-1"><span class="header-section-number">4.2.1</span> Préambule mathématique</a></li>
+  <li><a href="#algorithme-code-1" id="toc-algorithme-code-1" class="nav-link" data-scroll-target="#algorithme-code-1"><span class="header-section-number">4.2.2</span> Algorithme (code)</a></li>
+  <li><a href="#labels-de-code-1" id="toc-labels-de-code-1" class="nav-link" data-scroll-target="#labels-de-code-1"><span class="header-section-number">4.2.3</span> Labels de code</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#pourquoi-on-a-besoin-de-ces-fonctions" id="toc-pourquoi-on-a-besoin-de-ces-fonctions" class="nav-link" data-scroll-target="#pourquoi-on-a-besoin-de-ces-fonctions"><span class="header-section-number">5</span> Pourquoi on a besoin de ces fonctions</a></li>
+  <li><a href="#laplace.py-predictive-prior-via-laplace" id="toc-laplace.py-predictive-prior-via-laplace" class="nav-link" data-scroll-target="#laplace.py-predictive-prior-via-laplace"><span class="header-section-number">6</span> laplace.py : predictive prior via Laplace</a>
+  <ul class="collapse">
+  <li><a href="#objectif-1" id="toc-objectif-1" class="nav-link" data-scroll-target="#objectif-1"><span class="header-section-number">6.1</span> Objectif</a></li>
+  <li><a href="#etapes-code" id="toc-etapes-code" class="nav-link" data-scroll-target="#etapes-code"><span class="header-section-number">6.2</span> Etapes (code)</a></li>
+  <li><a href="#labels-de-code-2" id="toc-labels-de-code-2" class="nav-link" data-scroll-target="#labels-de-code-2"><span class="header-section-number">6.3</span> Labels de code</a></li>
+  </ul></li>
   </ul>
 </nav>
 </div>
@@ -136,35 +151,216 @@ window.Quarto = {
 </header>
 
 
-<section id="contexte" class="level1" data-number="1">
-<h1 data-number="1"><span class="header-section-number">1</span> Contexte</h1>
-<p>Ce document résume ce qui a été recodé jusqu’ici dans <code>recode/models/h_actions.py</code> et la logique prévue pour <code>recode/design_optimizer/base.py</code>.</p>
+<section id="préambule-global-objectif-et-méthode" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Préambule global : objectif et méthode</h1>
+<section id="objectif-global" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="objectif-global"><span class="header-section-number">1.1</span> Objectif global</h2>
+<p>Le but du programme est d’evaluer la <strong>séparabilite a priori entre modèles</strong> (comparaison de familles de h(t)) pour un design donné, via une borne de type <strong>Chernoff</strong>. L’idée est de produire, pour chaque modèle, une <strong>distribution prédictive</strong> de la sortie <span class="math inline">\(y\)</span> (mesures aux temps de mesure), puis de comparer ces distributions deux à deux, pour estimer la probabilité d’erreur de classification (quelle est la probabilité de classifier le modèle en <span class="math inline">\(j\)</span> sachant que le modèle est généré par <span class="math inline">\(i\)</span> ?).</p>
+<p>Pour ce faire, on utilise la méthode décrite dans Optimizing Experimental Design for Comparing Models of Brain Function (de Jean).</p>
+<section id="résummé-des-maths-du-papier" class="level3" data-number="1.1.1">
+<h3 data-number="1.1.1" class="anchored" data-anchor-id="résummé-des-maths-du-papier"><span class="header-section-number">1.1.1</span> Résummé des maths du papier</h3>
+<section id="notations" class="level4" data-number="1.1.1.1">
+<h4 data-number="1.1.1.1" class="anchored" data-anchor-id="notations"><span class="header-section-number">1.1.1.1</span> Notations:</h4>
 <ul>
-<li>Fichier principal des modèles : <code>recode/models/h_actions.py</code></li>
-<li>Fichier utilitaire (numérique) : <code>recode/design_optimizer/base.py</code></li>
+<li><strong>Espace des modèles</strong> : <span class="math inline">\(\mathcal M=\{m_1,\dots,m_{\bar M}\}\)</span> avec un <strong>a priori sur les modèles</strong> <span class="math inline">\(p(m)\)</span>.</li>
+<li><strong>Design / manipulation expérimentale</strong> : <span class="math inline">\(d\in\mathcal D\)</span>.</li>
+<li><strong>Données observées</strong> : <span class="math inline">\(y\in\mathcal Y\)</span>.</li>
+<li><strong>Paramètres latents</strong> d’un modèle <span class="math inline">\(m\)</span> : <span class="math inline">\(\theta\)</span>.</li>
 </ul>
 </section>
-<section id="h_action-modèle-ht" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> h_action : modèle h(t)</h1>
-<section id="objectif" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="objectif"><span class="header-section-number">2.1</span> Objectif</h2>
+<section id="vraisemblances-priors-evidence" class="level4" data-number="1.1.1.2">
+<h4 data-number="1.1.1.2" class="anchored" data-anchor-id="vraisemblances-priors-evidence"><span class="header-section-number">1.1.1.2</span> Vraisemblances, priors, evidence</h4>
+<ul>
+<li><p>Vraisemblance : <span class="math inline">\(p(y\mid \vartheta,m,u)\)</span>.</p></li>
+<li><p>Prior paramètres : <span class="math inline">\(p(\vartheta\mid m,u)\)</span> (souvent <span class="math inline">\(u\)</span> n’entre pas dans le prior, mais ils laissent la dépendance possible).</p></li>
+<li><p><strong>Evidence / vraisemblance marginale</strong> (aussi “model evidence”) : <span class="math display">\[
+p(y\mid m,u)=\int p(y\mid \vartheta,m,u)\,p(\vartheta\mid m,u)\,d\vartheta.
+\]</span></p></li>
+<li><p><strong>Posterior sur les modèles</strong> (à quel point un modèle donné <span class="math inline">\(m\)</span> est plausible conditionnellement aux données et le design) : <span class="math display">\[
+p(m\mid y,u)=\frac{p(m)\,p(y\mid m,u)}{p(y\mid u)},\qquad
+p(y\mid u)=\sum_{m\in\mathcal M} p(m)\,p(y\mid m,u).
+\]</span></p></li>
+</ul>
+</section>
+<section id="décision-bayésienne-avec-erreur-0-1" class="level4" data-number="1.1.1.3">
+<h4 data-number="1.1.1.3" class="anchored" data-anchor-id="décision-bayésienne-avec-erreur-0-1"><span class="header-section-number">1.1.1.3</span> Décision Bayésienne avec erreur 0-1 :</h4>
+<p>On formalise la <strong>sélection de modèle</strong> comme une décision <span class="math inline">\(\hat m(y)\in\mathcal M\)</span>, avec une <strong>perte 0–1</strong> (erreur si on ne choisit pas le “vrai” modèle générateur <span class="math inline">\(m\)</span>) : <span class="math display">\[
+e(m,\hat m)=\begin{cases}
+1 &amp; \text{si }\hat m\neq m\\
+0 &amp; \text{sinon.}
+\end{cases}
+\]</span></p>
+<p>Alors, étant données des données <span class="math inline">\(y\)</span>, la règle optimale de classfication de modèle (au sens du risque posterior) est le <strong>MAP</strong> : <span class="math display">\[
+\hat m(y)=\arg\min_{\hat m}\ \mathbb E_{p(m\mid y,u)}[e(m,\hat m)]
+=\arg\max_{m\in\mathcal M} p(m\mid y,u).
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Espérance prise sur la distribution des posteriors sur les modèles, c’est à dire la plausibilité de chaque modèle + maximiser <span class="math inline">\(e(m,\hat m)\)</span> revient à minimiser <span class="math inline">\(1-e(m,\hat m\)</span>) ).</p>
+</div>
+</div>
+<p>La <strong>proba d’erreur conditionnelle</strong> (étant donné <span class="math inline">\(y,u\)</span> et en appliquant la règle optimale) devient :</p>
+<p><span class="math display">\[
+P_e(y,u)=p(\hat e=1\mid y,u)=1-p(\hat m(y)\mid y,u)=1-\max_m p(m\mid y,u).
+\]</span></p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Explication : <span class="math inline">\(p(\hat m(y)\mid y,u)\)</span> correspond à la probabilité que le modèle choisit par la règle précédente soit le vrai modèle.</p>
+</div>
+</div>
+</section>
+<section id="objectif-doptimal-design-minimiser-lerreur-attendue-avant-dobserver-y" class="level4" data-number="1.1.1.4">
+<h4 data-number="1.1.1.4" class="anchored" data-anchor-id="objectif-doptimal-design-minimiser-lerreur-attendue-avant-dobserver-y"><span class="header-section-number">1.1.1.4</span> Objectif d’optimal design : minimiser l’erreur <em>attendue</em> avant d’observer <span class="math inline">\(y\)</span></h4>
+<p>Comme <span class="math inline">\(y\)</span> n’est pas encore observé au moment de choisir <span class="math inline">\(u\)</span>, on peut définir le <strong>design risk</strong> comme l’erreur moyenne sur <span class="math inline">\(y\)</span> tiré de la prédiction marginale <span class="math inline">\(p(y\mid u)\)</span>.</p>
+<p>Le <strong>design optimal</strong> est alors définit car celui minimisant le design risk : <span class="math display">\[
+u^\star=\arg\min_u \ \mathbb E_{p(y\mid u)}[\hat e]
+=\arg\min_u\ p(\hat e=1\mid u).
+\]</span></p>
+<p>Avec <span class="math display">\[
+p(\hat e=1\mid u)=\int_{\mathcal Y} p(\hat e=1\mid y,u)\,p(y\mid u)\,dy
+=1-\int_{\mathcal Y}\max_m \big[p(m)\,p(y\mid m,u)\big]\,dy.
+\]</span></p>
+<p>Point clé : cette quantité est <strong>difficile</strong> à calculer (intégrale + max sur les modèles). Il convient alors d’en trouver une <strong>borne information-théorique</strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Notons que la prédiction marginale des données par rapport au design dépend de la distribution que l’on donne sur les modèles !</p>
+</div>
+</div>
+</section>
+<section id="choix-de-la-borne" class="level4" data-number="1.1.1.5">
+<h4 data-number="1.1.1.5" class="anchored" data-anchor-id="choix-de-la-borne"><span class="header-section-number">1.1.1.5</span> Choix de la borne</h4>
+<p>On simplifie : on va essayer de borner 2 à 2. <span class="math display">\[
+E = \{\hat m(y) \ne m^*\} = \bigcup_{j\ne m^*} E_j,
+\]</span> ou <span class="math inline">\(E_j\)</span> = “on choisit <span class="math inline">\(j\)</span> alors que <span class="math inline">\(m^*\)</span> est vrai”. Par l’inegalite de Boole (union bound), <span class="math display">\[
+P(E) \le \sum_{j\ne m^*} P(E_j).
+\]</span> Donc si chaque probabilite d’erreur binaire <span class="math inline">\(P(E_j)\)</span> est petite, leur somme (et donc l’erreur totale) l’est aussi. C’est ce qui justifie le recours aux bornes pairwise.</p>
+<p>Pour ce faire, on calcule la borne de Chernoff:</p>
+<p>On compare deux modeles avec densites <span class="math inline">\(p_0(y)\)</span> et <span class="math inline">\(p_1(y)\)</span>, et des prior egaux <span class="math inline">\(1/2\)</span>.</p>
+<p>L’erreur minimale (decision bayesienne optimale) s’ecrit :</p>
+<p><span class="math display">\[
+P_{err} = \tfrac{1}{2} \int \min(p_0(y), p_1(y))\,dy
+\]</span></p>
+<p>Pour tout <span class="math inline">\(s \in [0,1]\)</span>, on a l’inegalite :</p>
+<p><span class="math display">\[
+\min(a,b) \le a^{1-s} b^s
+\]</span></p>
+<p>En l’appliquant sous l’integrale :</p>
+<p><span class="math display">\[
+P_{err} \le \tfrac{1}{2} \int p_0(y)^{1-s} p_1(y)^s\,dy
+\]</span></p>
+<p>En minimisant sur <span class="math inline">\(s\)</span> (equivalent a maximiser l’opposant du log), on obtient la borne de Chernoff :</p>
+<p><span class="math display">\[
+P_{err} \le \tfrac{1}{2} \exp(-C)
+\]</span></p>
+<p>ou</p>
+<p><span class="math display">\[
+C = \max_{s \in [0,1]} \; -\log \int p_0(y)^{1-s} p_1(y)^s\,dy
+\]</span></p>
+<p>Ce <span class="math inline">\(C\)</span> est le <strong>Chernoff information</strong>. Plus <span class="math inline">\(C\)</span> est grand, plus les distributions sont separables.</p>
+</section>
+<section id="cas-gaussien-formule-utilisee-dans-le-code" class="level4" data-number="1.1.1.6">
+<h4 data-number="1.1.1.6" class="anchored" data-anchor-id="cas-gaussien-formule-utilisee-dans-le-code"><span class="header-section-number">1.1.1.6</span> Cas gaussien (formule utilisee dans le code)</h4>
+<p>Si <span class="math inline">\(p_0, p_1\)</span> sont gaussiennes <span class="math inline">\(\mathcal{N}(\mu_0, \Sigma_0)\)</span> et <span class="math inline">\(\mathcal{N}(\mu_1, \Sigma_1)\)</span> :</p>
+<p><span class="math display">\[
+C_s = \tfrac{1}{2}\Big( s(1-s)\,\Delta\mu^T \Sigma_s^{-1} \Delta\mu
++ \log|\Sigma_s| - (1-s)\log|\Sigma_0| - s\log|\Sigma_1| \Big)
+\]</span></p>
+<p>avec <span class="math inline">\(\Delta\mu = \mu_1 - \mu_0\)</span> et <span class="math inline">\(\Sigma_s = (1-s)\Sigma_0 + s\Sigma_1\)</span>. On prend :</p>
+<p><span class="math display">\[
+C = \max_{s \in [0,1]} C_s
+\]</span></p>
+</section>
+</section>
+</section>
+<section id="methode-vue-densemble" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="methode-vue-densemble"><span class="header-section-number">1.2</span> Methode (vue d’ensemble)</h2>
+<ol type="1">
+<li><p><strong>Definir les modeles h(t)</strong></p>
+<p>Les modeles sont definis dans <code>recode/models/h_actions.py</code> (kernels + update modes). Chaque modele est une fonction parametrique <code>Function</code> avec <code>parameters</code>, <code>sim_priors</code>, <code>eval(...)</code> et optionnellement <code>jacobian(...)</code>.</p></li>
+<li><p><strong>Construire un design</strong></p>
+<p>Le design (inputs) contient <code>t_measure</code> ainsi que les evenements Eff_/Rew_ (et actions si necessaire). L’evaluation d’un modele fournit un vecteur <strong>y</strong> de taille = nombre de temps de mesure.</p></li>
+<li><p><strong>Approximation de Laplace (predictive prior)</strong></p>
+<ul>
+<li><strong>Moyenne predictive</strong> :</li>
+</ul>
+<p><span class="math display">\[
+  \mu_y = g(\mu_\theta)
+\]</span></p>
+<p>ou <code>g = func.eval(design_inputs)</code> en fixant les params au prior (<code>sim_priors</code>).</p>
+<ul>
+<li><strong>Covariance predictive</strong> (linearisation) :</li>
+</ul>
+<p><span class="math display">\[
+  V_y = R + J \Sigma J^\top
+\]</span></p>
+<p>ou <span class="math inline">\(R = \sigma^2 I\)</span>, <span class="math inline">\(J = \partial g / \partial \theta\)</span>, <span class="math inline">\(\Sigma = \mathrm{diag}(var_{prior})\)</span>.</p>
+<ul>
+<li><code>J</code> est obtenu par <code>func.jacobian(...)</code> si disponible, sinon par <code>numerical_jacobian(...)</code> (voir <code>recode/design_optimizer/base.py</code>).</li>
+</ul></li>
+<li><p><strong>Score de séparabilite (Chernoff)</strong></p>
+<p>Les distributions predictive de chaque modele (gaussiennes) sont comparees deux a deux pour obtenir une mesure de separabilite globale du design.</p>
+<p>Cette partie sera implementee dans <code>recode/design_optimizer/chernoff.py</code>.</p></li>
+</ol>
+</section>
+<section id="pourquoi-laplace" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="pourquoi-laplace"><span class="header-section-number">1.3</span> Pourquoi Laplace ?</h2>
+<p>La borne de Chernoff est <strong>fermée</strong> pour des distributions gaussiennes. Laplace donne une approximation gaussienne rapide de la predictive, ce qui rend le score de separabilite calculable et stable numeriquement.</p>
+</section>
+</section>
+<section id="contexte" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Contexte</h1>
+<p>Ce document résume ce qui a été recodé jusqu’ici dans <code>recode/models/h_actions.py</code> et la logique prévue pour <code>recode/design_optimizer/base.py</code>.</p>
+<ul>
+<li><p>Fichier principal des modèles : <code>recode/models/h_actions.py</code></p></li>
+<li><p>Fichier utilitaire (numérique) : <code>recode/design_optimizer/base.py</code></p></li>
+<li><p>Fichier Laplace (predictive) : <code>recode/design_optimizer/laplace.py</code></p></li>
+</ul>
+</section>
+<section id="h_action-modèle-ht" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> h_action : modèle h(t)</h1>
+<section id="objectif" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="objectif"><span class="header-section-number">3.1</span> Objectif</h2>
 <p>Le module <code>h_actions</code> définit des fonctions h(t) paramétrées, utilisées pour comparer des modèles. Les 6 modèles sont obtenus par combinaison :</p>
 <ul>
-<li><strong>Kernel</strong> ∈ {<code>event_weighted</code>, <code>action_avg</code>}</li>
-<li><strong>Update mode</strong> ∈ {<code>continuous</code>, <code>event</code>, <code>action</code>}</li>
+<li><p><strong>Kernel</strong> ∈ {<code>event_weighted</code>, <code>action_avg</code>}</p></li>
+<li><p><strong>Update mode</strong> ∈ {<code>continuous</code>, <code>event</code>, <code>action</code>}</p></li>
 </ul>
 <p>Dans cette version, l’observation est <strong>identity</strong> (pas de sigmoid), donc h(t) est la sortie directe.</p>
 </section>
-<section id="notations" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="notations"><span class="header-section-number">2.2</span> Notations</h2>
+<section id="notations-1" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="notations-1"><span class="header-section-number">3.2</span> Notations</h2>
 <p>On définit des événements d’effort et de récompense :</p>
 <ul>
-<li>Effort : <span class="math inline">\((e_k, t^e_k)\)</span></li>
-<li>Reward : <span class="math inline">\((r_k, t^r_k)\)</span></li>
+<li><p>Effort : <span class="math inline">\((e_k, t^e_k)\)</span></p></li>
+<li><p>Reward : <span class="math inline">\((r_k, t^r_k)\)</span></p></li>
 </ul>
 <p>Le paramètre <span class="math inline">\(\gamma\in(0,1]\)</span> contrôle la décroissance temporelle, et <span class="math inline">\(W_{eff}, W_{rew}\)</span> pondèrent effort / reward.</p>
-<section id="opérateur-de-snap" class="level3" data-number="2.2.1">
-<h3 data-number="2.2.1" class="anchored" data-anchor-id="opérateur-de-snap"><span class="header-section-number">2.2.1</span> Opérateur de “snap”</h3>
+<section id="opérateur-de-snap" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="opérateur-de-snap"><span class="header-section-number">3.2.1</span> Opérateur de “snap”</h3>
 <p>Certaines versions n’évaluent pas h(t) au temps exact t mais au <strong>dernier événement</strong> avant t. On définit :</p>
 <p><span class="math display">\[
 \tau(t) = \max\{ \tau \le t \mid \tau \in \mathcal{M} \}
@@ -172,47 +368,47 @@ window.Quarto = {
 <p>où <span class="math inline">\(\mathcal{M}\)</span> est un ensemble de “marks” (temps d’événements). Dans le code : <code>snap_times</code>.</p>
 </section>
 </section>
-<section id="kernel-1-event_weighted" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="kernel-1-event_weighted"><span class="header-section-number">2.3</span> Kernel 1 — event_weighted</h2>
-<section id="formule-générale" class="level3" data-number="2.3.1">
-<h3 data-number="2.3.1" class="anchored" data-anchor-id="formule-générale"><span class="header-section-number">2.3.1</span> Formule générale</h3>
+<section id="kernel-1-event_weighted" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="kernel-1-event_weighted"><span class="header-section-number">3.3</span> Kernel 1 — event_weighted</h2>
+<section id="formule-générale" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="formule-générale"><span class="header-section-number">3.3.1</span> Formule générale</h3>
 <p>Pour un temps évalué <span class="math inline">\(t\)</span> (ou son version snappée <span class="math inline">\(\tau(t)\)</span>),</p>
 <p><span class="math display">\[
 h(t) = W_{eff} \sum_{k: t^e_k \le t} e_k \, \gamma^{(t - t^e_k)} + W_{rew} \sum_{k: t^r_k \le t} r_k \, \gamma^{(t - t^r_k)}
 \]</span></p>
 </section>
-<section id="variantes-update-modes" class="level3" data-number="2.3.2">
-<h3 data-number="2.3.2" class="anchored" data-anchor-id="variantes-update-modes"><span class="header-section-number">2.3.2</span> Variantes (update modes)</h3>
+<section id="variantes-update-modes" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="variantes-update-modes"><span class="header-section-number">3.3.2</span> Variantes (update modes)</h3>
 <ul>
-<li><strong>continuous</strong> : <span class="math inline">\(t\)</span> direct.</li>
-<li><strong>event</strong> : <span class="math inline">\(t \leftarrow \tau(t)\)</span> avec marks = temps Eff/Rew.</li>
-<li><strong>action</strong> : <span class="math inline">\(t \leftarrow \tau(t)\)</span> avec marks = temps de reward.</li>
+<li><p><strong>continuous</strong> : <span class="math inline">\(t\)</span> direct.</p></li>
+<li><p><strong>event</strong> : <span class="math inline">\(t \leftarrow \tau(t)\)</span> avec marks = temps Eff/Rew.</p></li>
+<li><p><strong>action</strong> : <span class="math inline">\(t \leftarrow \tau(t)\)</span> avec marks = temps de reward.</p></li>
 </ul>
 </section>
-<section id="label-de-code" class="level3" data-number="2.3.3">
-<h3 data-number="2.3.3" class="anchored" data-anchor-id="label-de-code"><span class="header-section-number">2.3.3</span> Label de code</h3>
+<section id="label-de-code" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="label-de-code"><span class="header-section-number">3.3.3</span> Label de code</h3>
 <ul>
 <li>Implémentation : <code>recode/models/h_actions.py</code> → <code>build_h_action_function(...)</code>, branche <code>kernel == "event_weighted"</code>.</li>
 </ul>
 </section>
 </section>
-<section id="kernel-2-action_avg" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="kernel-2-action_avg"><span class="header-section-number">2.4</span> Kernel 2 — action_avg</h2>
+<section id="kernel-2-action_avg" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="kernel-2-action_avg"><span class="header-section-number">3.4</span> Kernel 2 — action_avg</h2>
 <p>Ce kernel moyenne les contributions par type d’action. Pour <span class="math inline">\(K\)</span> types,</p>
 <p><span class="math display">\[
 h(t) = \frac{1}{K} \sum_{k=1}^K \left( W_{eff} \sum_{i\in\mathcal{E}_k} e_i \, \gamma^{(t_k - t^e_i)} + W_{rew} \sum_{i\in\mathcal{R}_k} r_i \, \gamma^{(t_k - t^r_i)} \right)
 \]</span></p>
 <p>où <span class="math inline">\(t_k\)</span> est le temps “snappé” spécifique au type <span class="math inline">\(k\)</span>.</p>
-<section id="variantes-update-modes-1" class="level3" data-number="2.4.1">
-<h3 data-number="2.4.1" class="anchored" data-anchor-id="variantes-update-modes-1"><span class="header-section-number">2.4.1</span> Variantes (update modes)</h3>
+<section id="variantes-update-modes-1" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="variantes-update-modes-1"><span class="header-section-number">3.4.1</span> Variantes (update modes)</h3>
 <ul>
 <li><strong>continuous</strong> : <span class="math inline">\(t_k = t\)</span></li>
 <li><strong>event</strong> : <span class="math inline">\(t_k\)</span> snappé sur Eff/Rew du type <span class="math inline">\(k\)</span></li>
 <li><strong>action</strong> : <span class="math inline">\(t_k\)</span> snappé sur reward du type <span class="math inline">\(k\)</span></li>
 </ul>
 </section>
-<section id="label-de-code-1" class="level3" data-number="2.4.2">
-<h3 data-number="2.4.2" class="anchored" data-anchor-id="label-de-code-1"><span class="header-section-number">2.4.2</span> Label de code</h3>
+<section id="label-de-code-1" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="label-de-code-1"><span class="header-section-number">3.4.2</span> Label de code</h3>
 <ul>
 <li>Implémentation : <code>recode/models/h_actions.py</code> → <code>build_h_action_function(...)</code>, branche <code>kernel == "action_avg"</code>.</li>
 </ul>
@@ -220,17 +416,17 @@ h(t) = \frac{1}{K} \sum_{k=1}^K \left( W_{eff} \sum_{i\in\mathcal{E}_k} e_i \, \
 </section>
 </section>
 </section>
-<section id="base.py-dérivation-numérique-logdet" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> base.py : dérivation numérique + logdet</h1>
+<section id="base.py-dérivation-numérique-logdet" class="level1" data-number="4">
+<h1 data-number="4"><span class="header-section-number">4</span> base.py : dérivation numérique + logdet</h1>
 <p>Ce module sert à fournir deux outils mathématiques nécessaires à la Laplace/Chernoff :</p>
 <ul>
-<li><strong>Jacobian numérique</strong> (approximation de dérivées)</li>
-<li><strong>Log‑determinant PSD</strong> (stabilité numérique)</li>
+<li><p><strong>Jacobian numérique</strong> (approximation de dérivées)</p></li>
+<li><p><strong>Log‑determinant PSD</strong> (stabilité numérique)</p></li>
 </ul>
-<section id="jacobienne-numérique" class="level2" data-number="3.1">
-<h2 data-number="3.1" class="anchored" data-anchor-id="jacobienne-numérique"><span class="header-section-number">3.1</span> Jacobienne numérique</h2>
-<section id="préambule-mathématique" class="level3" data-number="3.1.1">
-<h3 data-number="3.1.1" class="anchored" data-anchor-id="préambule-mathématique"><span class="header-section-number">3.1.1</span> Préambule mathématique</h3>
+<section id="jacobienne-numérique" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="jacobienne-numérique"><span class="header-section-number">4.1</span> Jacobienne numérique</h2>
+<section id="préambule-mathématique" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="préambule-mathématique"><span class="header-section-number">4.1.1</span> Préambule mathématique</h3>
 <p>On veut approximer la jacobienne :</p>
 <p><span class="math display">\[
 J_{ij} = \frac{\partial f_i(\theta)}{\partial \theta_j}
@@ -240,31 +436,31 @@ J_{ij} = \frac{\partial f_i(\theta)}{\partial \theta_j}
 \frac{\partial f}{\partial \theta_j} \approx \frac{f(\theta_j + \delta) - f(\theta_j - \delta)}{2\delta}
 \]</span></p>
 </section>
-<section id="algorithme-code" class="level3" data-number="3.1.2">
-<h3 data-number="3.1.2" class="anchored" data-anchor-id="algorithme-code"><span class="header-section-number">3.1.2</span> Algorithme (code)</h3>
+<section id="algorithme-code" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="algorithme-code"><span class="header-section-number">4.1.2</span> Algorithme (code)</h3>
 <p>Implémentation prévue dans <code>recode/design_optimizer/base.py</code> :</p>
 <ol type="1">
-<li>Évaluer <span class="math inline">\(f(\theta)\)</span> avec <code>f.eval(inputs)</code></li>
-<li>Pour chaque paramètre <span class="math inline">\(\theta_j\)</span> :
+<li><p>Évaluer <span class="math inline">\(f(\theta)\)</span> avec <code>f.eval(inputs)</code></p></li>
+<li><p>Pour chaque paramètre <span class="math inline">\(\theta_j\)</span> :</p>
 <ul>
-<li>définir <span class="math inline">\(\delta = \varepsilon \cdot \max(1, |\theta_j|)\)</span> (on définit le pas des différences finies en le prenant proportionnel au paramètre en question)</li>
-<li>évaluer <span class="math inline">\(f(\theta_j + \delta)\)</span> et <span class="math inline">\(f(\theta_j - \delta)\)</span></li>
-<li>remplir la colonne <span class="math inline">\(j\)</span> du Jacobien</li>
+<li><p>définir <span class="math inline">\(\delta = \varepsilon \cdot \max(1, |\theta_j|)\)</span> (on définit le pas des différences finies en le prenant proportionnel au paramètre en question)</p></li>
+<li><p>évaluer <span class="math inline">\(f(\theta_j + \delta)\)</span> et <span class="math inline">\(f(\theta_j - \delta)\)</span></p></li>
+<li><p>remplir la colonne <span class="math inline">\(j\)</span> du Jacobien</p></li>
 </ul></li>
 </ol>
 </section>
-<section id="labels-de-code" class="level3" data-number="3.1.3">
-<h3 data-number="3.1.3" class="anchored" data-anchor-id="labels-de-code"><span class="header-section-number">3.1.3</span> Labels de code</h3>
+<section id="labels-de-code" class="level3" data-number="4.1.3">
+<h3 data-number="4.1.3" class="anchored" data-anchor-id="labels-de-code"><span class="header-section-number">4.1.3</span> Labels de code</h3>
 <ul>
-<li>Fonction : <code>numerical_jacobian(...)</code></li>
-<li>Fichier : <code>recode/design_optimizer/base.py</code></li>
+<li><p>Fonction : <code>numerical_jacobian(...)</code></p></li>
+<li><p>Fichier : <code>recode/design_optimizer/base.py</code></p></li>
 </ul>
 </section>
 </section>
-<section id="logdet_psd" class="level2" data-number="3.2">
-<h2 data-number="3.2" class="anchored" data-anchor-id="logdet_psd"><span class="header-section-number">3.2</span> logdet_psd</h2>
-<section id="préambule-mathématique-1" class="level3" data-number="3.2.1">
-<h3 data-number="3.2.1" class="anchored" data-anchor-id="préambule-mathématique-1"><span class="header-section-number">3.2.1</span> Préambule mathématique</h3>
+<section id="logdet_psd" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="logdet_psd"><span class="header-section-number">4.2</span> logdet_psd</h2>
+<section id="préambule-mathématique-1" class="level3" data-number="4.2.1">
+<h3 data-number="4.2.1" class="anchored" data-anchor-id="préambule-mathématique-1"><span class="header-section-number">4.2.1</span> Préambule mathématique</h3>
 <p>On a besoin de <span class="math inline">\(\log |\Sigma|\)</span> pour les matrices de covariance (Laplace). Si <span class="math inline">\(\Sigma\)</span> est PSD (positive semi‑definite), on utilise :</p>
 <p><span class="math display">\[
 \log |\Sigma| = \log \det(\Sigma)
@@ -275,8 +471,8 @@ J_{ij} = \frac{\partial f_i(\theta)}{\partial \theta_j}
 \]</span></p>
 <p>Puis on utilise <code>slogdet</code>.</p>
 </section>
-<section id="algorithme-code-1" class="level3" data-number="3.2.2">
-<h3 data-number="3.2.2" class="anchored" data-anchor-id="algorithme-code-1"><span class="header-section-number">3.2.2</span> Algorithme (code)</h3>
+<section id="algorithme-code-1" class="level3" data-number="4.2.2">
+<h3 data-number="4.2.2" class="anchored" data-anchor-id="algorithme-code-1"><span class="header-section-number">4.2.2</span> Algorithme (code)</h3>
 <p>Implémentation prévue dans <code>recode/design_optimizer/base.py</code> :</p>
 <ol type="1">
 <li>Convertir en <code>np.ndarray</code></li>
@@ -285,8 +481,8 @@ J_{ij} = \frac{\partial f_i(\theta)}{\partial \theta_j}
 <li>Si sign ≤ 0, retourner <code>-inf</code></li>
 </ol>
 </section>
-<section id="labels-de-code-1" class="level3" data-number="3.2.3">
-<h3 data-number="3.2.3" class="anchored" data-anchor-id="labels-de-code-1"><span class="header-section-number">3.2.3</span> Labels de code</h3>
+<section id="labels-de-code-1" class="level3" data-number="4.2.3">
+<h3 data-number="4.2.3" class="anchored" data-anchor-id="labels-de-code-1"><span class="header-section-number">4.2.3</span> Labels de code</h3>
 <ul>
 <li>Fonction : <code>logdet_psd(...)</code></li>
 <li>Fichier : <code>recode/design_optimizer/base.py</code></li>
@@ -295,13 +491,59 @@ J_{ij} = \frac{\partial f_i(\theta)}{\partial \theta_j}
 </section>
 </section>
 </section>
-<section id="pourquoi-on-a-besoin-de-ces-fonctions" class="level1" data-number="4">
-<h1 data-number="4"><span class="header-section-number">4</span> Pourquoi on a besoin de ces fonctions</h1>
+<section id="pourquoi-on-a-besoin-de-ces-fonctions" class="level1" data-number="5">
+<h1 data-number="5"><span class="header-section-number">5</span> Pourquoi on a besoin de ces fonctions</h1>
 <ul>
-<li><strong>Jacobian numérique</strong> : utilisé pour estimer la covariance du modèle (Laplace) via linéarisation.</li>
-<li><strong>logdet_psd</strong> : utilisé pour calculer des divergences et des bornes (Chernoff), en restant stable numériquement.</li>
+<li><p><strong>Jacobian numérique</strong> : utilisé pour estimer la covariance du modèle (Laplace) via linéarisation.</p></li>
+<li><p><strong>logdet_psd</strong> : utilisé pour calculer des divergences et des bornes (Chernoff), en restant stable numériquement.</p></li>
 </ul>
 <p>Ce sont des briques indispensables pour comparer les modèles via Laplace + Chernoff.</p>
+<hr>
+</section>
+<section id="laplace.py-predictive-prior-via-laplace" class="level1" data-number="6">
+<h1 data-number="6"><span class="header-section-number">6</span> laplace.py : predictive prior via Laplace</h1>
+<section id="objectif-1" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="objectif-1"><span class="header-section-number">6.1</span> Objectif</h2>
+<p>Construire la distribution predictive de chaque modele (gaussienne) pour un design donne.</p>
+<p>On calcule <code>mu_y</code> et <code>V_y</code> via linearisation (Jacobien) et prior sur les parametres.</p>
+</section>
+<section id="etapes-code" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="etapes-code"><span class="header-section-number">6.2</span> Etapes (code)</h2>
+<ol type="1">
+<li><p><strong>Recuperer le prior parametres</strong></p>
+<ul>
+<li><p><code>mu, var, names = _prior_mean_and_var(func)</code></p></li>
+<li><p><code>Sigma = diag(var)</code></p></li>
+</ul></li>
+<li><p><strong>Evaluer la moyenne predictive</strong></p>
+<ul>
+<li><p><code>func.parameters.update(params)</code> avec <code>params = dict(zip(names, mu))</code></p></li>
+<li><p><code>y = func.eval(design_inputs)</code></p></li>
+</ul></li>
+<li><p><strong>Calculer le Jacobien</strong></p>
+<ul>
+<li><p><code>J = func.jacobian(...)</code> si disponible</p></li>
+<li><p>sinon <code>numerical_jacobian(func, design_inputs, params, eps)</code></p></li>
+</ul></li>
+<li><p><strong>Former la covariance predictive</strong></p>
+<ul>
+<li><p><code>R = sigma^2 I</code></p></li>
+<li><p><code>Vy = R + J @ Sigma @ J.T</code></p></li>
+</ul></li>
+<li><p><strong>Aggregation multi-modeles</strong></p>
+<ul>
+<li><code>laplace_predictive(...)</code> applique ce calcul a tous les modeles, en sequentiel ou parallele.</li>
+</ul></li>
+</ol>
+</section>
+<section id="labels-de-code-2" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="labels-de-code-2"><span class="header-section-number">6.3</span> Labels de code</h2>
+<ul>
+<li><p>Fonction : <code>_laplace_prior_predictive_gaussian(...)</code></p></li>
+<li><p>Orchestration : <code>laplace_predictive(...)</code></p></li>
+<li><p>Fichier : <code>recode/design_optimizer/laplace.py</code></p></li>
+</ul>
+</section>
 </section>
 
 </main>
