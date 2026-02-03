@@ -83,9 +83,11 @@ def build_h_action_function(    *,
 
     # Paramètres par défaut
     params: Dict[str, float] = {
+        "h0": 0.0,
         "gamma": 0.95,
         "W_eff": -1.0,
         "W_rew": 1.0,
+        "W_time": 0.0,
         "obs_temp": 1.0,
         "obs_bias": 0.0,
     }
@@ -94,9 +96,11 @@ def build_h_action_function(    *,
     # Priors (Normal) pour Laplace
     sim_priors: Dict[str, Any] = {
         # Aligned with legacy priors from functions/h_actions.py (where applicable)
+        "h0": {"dist": "Normal", "mu": 0.3020, "sigma": 0.07},
         "gamma": {"dist": "Normal", "mu": 0.3315, "sigma": 0.2},
         "W_eff": {"dist": "Normal", "mu": -0.0051, "sigma": 0.008},
         "W_rew": {"dist": "Normal", "mu": 0.2536, "sigma": 0.05},
+        "W_time": {"dist": "Normal", "mu": -0.00010, "sigma": 0.0003},
         "obs_temp": {"dist": "Normal", "mu": 1.0, "sigma": 0.0},
         "obs_bias": {"dist": "Normal", "mu": 0.0, "sigma": 0.0},
     }
@@ -160,9 +164,11 @@ def build_h_action_function(    *,
             raise ValueError("ERREUR Mauvais type d'update")
 
         def h(t):
+            h0 = p.get("h0", 0.0)
             gamma = p["gamma"]
             W_eff = p["W_eff"]
             W_rew = p["W_rew"]
+            W_time = p.get("W_time", 0.0)
             obs_temp = p.get("obs_temp", 1.0)
             obs_bias = p.get("obs_bias", 0.0)
             h_output = 0
@@ -177,6 +183,7 @@ def build_h_action_function(    *,
 
             if kernel == "event_weighted":
                 marks = _get_marks(update, Eff_times, Rew_times, Action_times)
+                t_measure = np.asarray(t, dtype=float)
                 if marks is None:
                     t_arr = np.asarray(t, dtype=float)
                 else:
@@ -189,7 +196,7 @@ def build_h_action_function(    *,
                 eff_contrib = _compute_contrib(t_arr, eff_vals, Eff_times, gamma)
                 rew_contrib = _compute_contrib(t_arr, rew_vals, Rew_times, gamma)
 
-                h = W_eff * eff_contrib + W_rew * rew_contrib
+                h = h0 + (W_time * t_measure) + (W_eff * eff_contrib) + (W_rew * rew_contrib)
                 h = _apply_observation_vals(h, float(obs_temp), float(obs_bias))
                 return h.tolist()
 
@@ -208,6 +215,7 @@ def build_h_action_function(    *,
                 t_arr_k = np.zeros((len(t),K_types), dtype=float)
                 t_arr = np.asarray(t, dtype=float)
                 h = np.zeros((len(t),K_types), dtype=float)
+                t_measure = np.asarray(t, dtype=float)
                 for type_idx in range(K_types):
                     Eff_times = np.sort(np.asarray(eff_times_by_type[type_idx]))
                     Rew_times = np.sort(np.asarray(rew_times_by_type[type_idx]))
@@ -231,6 +239,7 @@ def build_h_action_function(    *,
 
                     h[:,type_idx] = W_eff * eff_contrib + W_rew * rew_contrib
                 h_avg = (1.0 / K_types) * np.sum(h, axis=1)
+                h_avg = h0 + (W_time * t_measure) + h_avg
                 h_avg = _apply_observation_vals(h_avg, float(obs_temp), float(obs_bias))
                 return h_avg.tolist()
                     
@@ -252,6 +261,8 @@ def build_h_action_function(    *,
         gamma = float(params.get("gamma", 0.95))
         W_eff = float(params.get("W_eff", -1.0))
         W_rew = float(params.get("W_rew", 1.0))
+        h0 = float(params.get("h0", 0.0))
+        W_time = float(params.get("W_time", 0.0))
         obs_temp = float(params.get("obs_temp", 1.0))
         obs_bias = float(params.get("obs_bias", 0.0))
 
@@ -287,18 +298,25 @@ def build_h_action_function(    *,
                 return np.sort(np.concatenate([Eff_times, Rew_times]))
             raise ValueError("ERREUR Mauvais type d'update")
 
-        def _snap_times(t_seq: Sequence[float], marks: Sequence[float]) -> List[float]:
+        def _snap_times(
+            t_seq: Sequence[float],
+            marks: Sequence[float],
+            *,
+            default_value: Optional[float] = None,
+        ) -> List[float]:
             if marks is None:
                 return list(t_seq)
             marks_arr = np.asarray(marks, dtype=float)
             if marks_arr.size == 0:
-                return list(t_seq)
+                return [float(default_value) for _ in t_seq] if default_value is not None else list(t_seq)
             t_local = np.asarray(t_seq, dtype=float)
             marks_sorted = np.sort(marks_arr)
             idx = np.searchsorted(marks_sorted, t_local, side="right") - 1
             snapped = t_local.copy()
             mask = idx >= 0
             snapped[mask] = marks_sorted[idx[mask]]
+            if default_value is not None:
+                snapped[~mask] = float(default_value)
             return snapped.tolist()
 
         param_names = list(params.keys())
@@ -314,6 +332,8 @@ def build_h_action_function(    *,
         idx_gamma = _pidx("gamma")
         idx_weff = _pidx("W_eff")
         idx_wrew = _pidx("W_rew")
+        idx_h0 = _pidx("h0")
+        idx_wtime = _pidx("W_time")
         idx_ot = _pidx("obs_temp")
         idx_ob = _pidx("obs_bias")
 
@@ -323,18 +343,23 @@ def build_h_action_function(    *,
 
         if kernel == "event_weighted":
             marks = _get_marks(update, Eff_times, Rew_times, Action_times)
-            t_eval = t_arr if marks is None else np.asarray(_snap_times(t_arr, marks), dtype=float)
+            default_value = 0.0 if update == "action" else None
+            t_eval = t_arr if marks is None else np.asarray(_snap_times(t_arr, marks, default_value=default_value), dtype=float)
             eff_vals = np.asarray([v for v, _ in Eff_in], dtype=float)
             rew_vals = np.asarray([v for v, _ in Rew_in], dtype=float)
             eff_contrib, eff_dgamma = _compute_contrib_and_dgamma(t_eval, eff_vals, Eff_times, gamma)
             rew_contrib, rew_dgamma = _compute_contrib_and_dgamma(t_eval, rew_vals, Rew_times, gamma)
-            h_vals = W_eff * eff_contrib + W_rew * rew_contrib
+            h_vals = h0 + (W_time * t_arr) + (W_eff * eff_contrib) + (W_rew * rew_contrib)
             if idx_weff >= 0:
                 J[:, idx_weff] = eff_contrib
             if idx_wrew >= 0:
                 J[:, idx_wrew] = rew_contrib
             if idx_gamma >= 0:
                 J[:, idx_gamma] = W_eff * eff_dgamma + W_rew * rew_dgamma
+            if idx_h0 >= 0:
+                J[:, idx_h0] = 1.0
+            if idx_wtime >= 0:
+                J[:, idx_wtime] = t_arr
         else:
             if K_types_in is None or int(K_types_in) <= 0:
                 raise ValueError("K_types >= 1 doit être fourni pour kernel 'action_avg'")
@@ -359,7 +384,8 @@ def build_h_action_function(    *,
                 Rew_times_k = np.sort(np.asarray(rew_times_by_type[type_idx], dtype=float))
                 Action_times_k = Rew_times_k
                 marks = _get_marks(update, Eff_times_k, Rew_times_k, Action_times_k)
-                t_k = t_arr if marks is None else np.asarray(_snap_times(t_arr, marks), dtype=float)
+                default_value = 0.0 if update == "action" else None
+                t_k = t_arr if marks is None else np.asarray(_snap_times(t_arr, marks, default_value=default_value), dtype=float)
                 eff_vals = np.asarray(eff_vals_by_type[type_idx], dtype=float)
                 rew_vals = np.asarray(rew_vals_by_type[type_idx], dtype=float)
                 eff_contrib, eff_dgamma = _compute_contrib_and_dgamma(t_k, eff_vals, Eff_times_k, gamma)
@@ -370,13 +396,17 @@ def build_h_action_function(    *,
                 total_dgamma_rew += rew_dgamma
 
             scale = 1.0 / float(K_types_val)
-            h_vals = scale * (W_eff * total_eff + W_rew * total_rew)
+            h_vals = h0 + (W_time * t_arr) + scale * (W_eff * total_eff + W_rew * total_rew)
             if idx_weff >= 0:
                 J[:, idx_weff] = scale * total_eff
             if idx_wrew >= 0:
                 J[:, idx_wrew] = scale * total_rew
             if idx_gamma >= 0:
                 J[:, idx_gamma] = scale * (W_eff * total_dgamma_eff + W_rew * total_dgamma_rew)
+            if idx_h0 >= 0:
+                J[:, idx_h0] = 1.0
+            if idx_wtime >= 0:
+                J[:, idx_wtime] = t_arr
 
         if observation == "sigmoid":
             s = _sigmoid_array(h_vals, obs_temp, obs_bias)
@@ -387,6 +417,10 @@ def build_h_action_function(    *,
                 J[:, idx_weff] = J[:, idx_weff] * scale
             if idx_wrew >= 0:
                 J[:, idx_wrew] = J[:, idx_wrew] * scale
+            if idx_h0 >= 0:
+                J[:, idx_h0] = J[:, idx_h0] * scale
+            if idx_wtime >= 0:
+                J[:, idx_wtime] = J[:, idx_wtime] * scale
             if idx_ot >= 0:
                 J[:, idx_ot] = h_vals * (s * (1.0 - s))
             if idx_ob >= 0:

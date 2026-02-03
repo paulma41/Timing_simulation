@@ -1,5 +1,3 @@
-# TO CHECK
-
 from __future__ import annotations
 
 import math
@@ -8,6 +6,8 @@ from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 
 ActionTuple = Tuple[int, float, float, float, float]
+Event = Tuple[float, float]
+ActionTyped = Tuple[int, Event, Event]
 
 
 def markov_actions_with_types(
@@ -20,6 +20,11 @@ def markov_actions_with_types(
     """
     Simple Markov chain action generator per interval.
     1/2 no action, 1/6 for each type (0,1,2).
+        - t_fixed       = les temps réguliers
+        - guard_after_t = durée minimale post stimulus (que ce soit une mesure, une action...)
+        - progress_cb   = permet de màj le tqdm
+        - forced_type   = utile pour forcer l'action
+
     """
     action_types = [
         (0.5, 1.0),
@@ -30,30 +35,34 @@ def markov_actions_with_types(
     actions: List[ActionTuple] = []
     n_intervals = max(0, len(t_fixed) - 1)
     for m in range(n_intervals):
+        # On regarde l'intervalle entre deux mesures régulières
         start_abs = t_fixed[m]
         end_abs = t_fixed[m + 1]
+        # On constraint les actions de sorte à ce que ce soit dans cet intervalle 
+        # +- un petit delta
         local_start = start_abs + 2.0
         local_end = min(start_abs + 29.0, end_abs - guard_after_t)
+        # fallback: on a choisi un guard_after_t trop grand ou in interval trop petit
         if local_end <= local_start:
-            continue
+            raise ValueError("Interval or guard_after_t of wrong value.")
         last_rew_time = start_abs + guard_after_t
         t_cur = local_start
-        if progress_cb:
+        if progress_cb: #tqdm
             progress_cb(t_cur)
         while t_cur < local_end - 1e-9:
             r = rng.random()
-            if r < 0.5:
+            if r < 0.5: # Probabilité de se reposer = 0.5 !!
                 t_cur += 1.0
-                if progress_cb:
+                if progress_cb: #tqdm
                     progress_cb(t_cur)
                 continue
-            if forced_type is not None:
+            if forced_type is not None: #forced action
                 type_idx = int(forced_type)
                 if type_idx < 0:
                     type_idx = 0
                 if type_idx >= len(deltas):
                     type_idx = len(deltas) - 1
-            else:
+            else: #les actions sont équiprobables
                 r2 = (r - 0.5) / 0.5
                 if r2 < 1 / 3:
                     type_idx = 0
@@ -62,8 +71,9 @@ def markov_actions_with_types(
                 else:
                     type_idx = 2
             delta_k = deltas[type_idx]
-            t_rew = t_cur
-            if t_rew > local_end:
+            t_rew = t_cur + delta_k
+            # -- On skip si c'est pas dans l'interval : --
+            if t_rew > local_end: 
                 break
             t_eff = max(start_abs + guard_after_t, t_rew - delta_k)
             if t_eff >= t_rew or t_rew > (end_abs - guard_after_t):
@@ -76,9 +86,10 @@ def markov_actions_with_types(
                 if progress_cb:
                     progress_cb(t_cur)
                 continue
+            # ---------------------------------------------
             actions.append((type_idx, start_abs, end_abs, t_eff, t_rew))
             last_rew_time = t_rew
-            t_cur += delta_k
+            t_cur += delta_k + 1
             if progress_cb:
                 progress_cb(t_cur)
         if progress_cb:
@@ -100,7 +111,7 @@ def magneto_softmax(V: List[float], M: float, a: float, b: float) -> List[float]
         return [1.0, 0.0, 0.0, 0.0]
     return [x / total for x in exp_shift]
 
-
+# legacy: un modèle magneto continu event_weighted pour tous.
 def event_weighted_h(
     t_eval: float, Eff_hist: List[Tuple[float, float]], Rew_hist: List[Tuple[float, float]], gamma: float
 ) -> float:
@@ -130,6 +141,7 @@ def magneto_like_actions_with_value_learning(
     t_fixed: List[float],
     guard_after_t: float,
     *,
+    mood_model: Optional[Any] = None,
     gamma_decay: Optional[float] = None,
     progress_cb: Optional[Callable[[float], None]] = None,
     forced_type: Optional[int] = None,
@@ -141,6 +153,7 @@ def magneto_like_actions_with_value_learning(
     Dict[str, float],
     Dict[str, Any],
 ]:
+    # Init des paramètres de l'agent :
     action_types = [
         (0.5, 1.0),
         (0.25, 0.5),
@@ -160,19 +173,22 @@ def magneto_like_actions_with_value_learning(
             gamma_decay = rng.uniform(0.5, 0.99)
     alpha = 1.0 - gamma_decay
 
+    # Si notre agent a déjà une mémoire, il a donc estimé la valeur de chaque action V_est:
+    # Utile uniquement lorsque l'on utilise les blocs forcés ou qu'on compose des blocs
     if state is not None:
         V_est = list(state.get("V_est", [0.0 for _ in action_types]))
-        if len(V_est) != len(action_types):
-            V_est = [0.0 for _ in action_types]
         Eff_hist = list(state.get("Eff_hist", []))
         Rew_hist = list(state.get("Rew_hist", []))
+        A_typed_hist = list(state.get("A_typed_hist", []))
     else:
         V_est = [0.0 for _ in action_types]
         Eff_hist = []
         Rew_hist = []
+        A_typed_hist = []
 
     actions: List[ActionTuple] = []
 
+    # Main loop
     n_intervals = max(0, len(t_fixed) - 1)
     for m in range(n_intervals):
         start_abs = t_fixed[m]
@@ -186,8 +202,22 @@ def magneto_like_actions_with_value_learning(
         if progress_cb:
             progress_cb(t_cur)
         while t_cur < local_end - 1e-9:
-            M = event_weighted_h(t_cur, Eff_hist, Rew_hist, gamma_decay)
+            if mood_model is None:
+                M = event_weighted_h(t_cur, Eff_hist, Rew_hist, gamma_decay)
+            else:
+                # Use the provided model to compute the "mood" signal from current history.
+                M_eval = mood_model.eval(
+                    {
+                        "t": [float(t_cur)],
+                        "Eff_": Eff_hist,
+                        "Rew_": Rew_hist,
+                        "A_typed": A_typed_hist,
+                        "K_types": len(action_types),
+                    }
+                )
+                M = float(M_eval[0] if isinstance(M_eval, list) else M_eval)
             probs = magneto_softmax(V_est, M, a=a, b=b)
+            # Legacy: gestion du bloc forcé
             if forced_type is not None:
                 forced_idx = int(forced_type)
                 if forced_idx < 0:
@@ -218,7 +248,8 @@ def magneto_like_actions_with_value_learning(
                 continue
             type_idx = choice - 1
             delta_k = deltas[type_idx]
-            t_rew = t_cur
+            t_rew = t_cur + delta_k
+            # Gestion des out of range:
             if t_rew > local_end or t_rew > (end_abs - guard_after_t):
                 t_cur += 1.0
                 if progress_cb:
@@ -235,24 +266,26 @@ def magneto_like_actions_with_value_learning(
                 if progress_cb:
                     progress_cb(t_cur)
                 continue
+            
             actions.append((type_idx, start_abs, end_abs, t_eff, t_rew))
             last_rew_time = t_rew
 
             e_val, r_val = action_types[type_idx]
             Eff_hist.append((e_val, t_eff))
             Rew_hist.append((r_val, t_rew))
+            A_typed_hist.append((type_idx, (float(e_val), float(t_eff)), (float(r_val), float(t_rew))))
 
             target = r_val - e_val
             V_est[type_idx] += alpha * (target - V_est[type_idx])
 
-            t_cur += delta_k
+            t_cur += delta_k + 1
             if progress_cb:
                 progress_cb(t_cur)
         if progress_cb:
             progress_cb(local_end)
 
     actions.sort(key=lambda x: x[4])
-    state_out = {"V_est": V_est[:], "Eff_hist": Eff_hist[:], "Rew_hist": Rew_hist[:]}
+    state_out = {"V_est": V_est[:], "Eff_hist": Eff_hist[:], "Rew_hist": Rew_hist[:], "A_typed_hist": A_typed_hist[:]}
     return action_types, actions, {"a": a, "b": b, "gamma": gamma_decay, "V_final": V_est[:], "agent_kind": "magneto"}, state_out
 
 
@@ -270,4 +303,3 @@ def normalize_type_sequence(type_seq: Optional[Sequence[int]], n_types: int) -> 
             v = n_types - 1
         norm.append(v)
     return norm
-

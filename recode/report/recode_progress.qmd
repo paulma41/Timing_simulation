@@ -173,12 +173,17 @@ $$
    Les modeles sont definis dans `recode/models/h_actions.py` (kernels + update modes). Chaque modele est une fonction parametrique `Function` avec `parameters`, `sim_priors`, `eval(...)` et optionnellement `jacobian(...)`.
 
 
+::: {.callout-note}
+Dans le formalisme précédent, on a donc $y := [h(t_1),...,h(t_{\text{max}})]$.
+:::
 
 2. **Construire un design**  
 
    Le design (inputs) contient `t_measure` ainsi que les evenements Eff_/Rew_ (et actions si necessaire). L'evaluation d'un modele fournit un vecteur **y** de taille = nombre de temps de mesure.
 
-
+::: {.callout-note}
+Dans le formalisme précédent, ça correspond à $u$. Détails par la suite.
+:::
 
 3. **Approximation de Laplace (predictive prior)**  
 
@@ -305,7 +310,7 @@ Pour un temps évalué $t$ (ou son version snappée $\tau(t)$),
 
 
 $$
- h(t) = W_{eff} \sum_{k: t^e_k \le t} e_k \, \gamma^{(t - t^e_k)} + W_{rew} \sum_{k: t^r_k \le t} r_k \, \gamma^{(t - t^r_k)}
+ h(t) = W_{eff} \sum_{k: t^e_k \le t} e_k \, \gamma^{(t - t^e_k)} + W_{rew} \sum_{k: t^r_k \le t} r_k \, \gamma^{(t - t^r_k)} + h0 + W_{time}\times t
 $$
 
 
@@ -339,7 +344,7 @@ Ce kernel moyenne les contributions par type d’action. Pour $K$ types,
 
 
 $$
- h(t) = \frac{1}{K} \sum_{k=1}^K \left( W_{eff} \sum_{i\in\mathcal{E}_k} e_i \, \gamma^{(t_k - t^e_i)} + W_{rew} \sum_{i\in\mathcal{R}_k} r_i \, \gamma^{(t_k - t^r_i)} \right)
+ h(t) = \frac{1}{K} \sum_{k=1}^K \left( W_{eff} \sum_{i\in\mathcal{E}_k} e_i \, \gamma^{(t_k - t^e_i)} + W_{rew} \sum_{i\in\mathcal{R}_k} r_i \, \gamma^{(t_k - t^r_i)} \right) + h0 + W_{time}\times t
 $$
 
 
@@ -542,5 +547,134 @@ On calcule `mu_y` et `V_y` via linearisation (Jacobien) et prior sur les paramet
 
 - Fichier : `recode/design_optimizer/laplace.py`
 
+## Regles de simulation (design_v5 + 2 agents)
 
+### Grille de temps et fenetres
+On definit une grille de temps fixe `t_fixed = [t0, t1, ..., tN]` (pas `t_step`), qui decoupe l'experience en intervalles `[t_fixed[m], t_fixed[m+1]]`.
 
+Dans chaque intervalle, on autorise des actions uniquement dans une fenetre interne :
+
+- `start_abs = t_fixed[m]`
+- `end_abs = t_fixed[m+1]`
+- `local_start = start_abs + 2.0`
+- `local_end = min(start_abs + 29.0, end_abs - guard_after_t)`
+
+`guard_after_t` (par defaut 0.5) impose un "buffer" pour eviter des evenements trop proches du bord droit.
+
+### Representation des actions et des evenements
+Chaque action est definie par un type `type_idx` et deux evenements :
+
+- effort : `(e_val, t_eff)`
+- reward : `(r_val, t_rew)` avec `t_eff < t_rew`
+
+Dans le design, on stocke :
+
+- `Eff_ = [(e_val, t_eff), ...]`
+- `Rew_ = [(r_val, t_rew), ...]` (inclut aussi les bonus)
+- `A_typed = [(type_idx, (e_val, t_eff), (r_val, t_rew)), ...]`
+- `K_types = nombre de types d'actions`
+
+### Agent 1 : Markov (markov_actions_with_types)
+Regle d'action (par intervalle) :
+
+- on avance dans la fenetre locale avec un temps courant `t_cur`
+- a chaque "pas", on tire :
+  - proba 1/2 : ne rien faire -> `t_cur += 1.0`
+  - proba 1/6 : action type 0
+  - proba 1/6 : action type 1
+  - proba 1/6 : action type 2
+- si action de type `k` :
+  - `t_rew = t_cur + delta_k`
+  - `t_eff = max(start_abs + guard_after_t, t_rew - delta_k)`
+  - si contraintes non respectees (bord, ordre, chevauchement), on skippe l'action
+  => Cela simplifie la boucle, mais en vrai ça augment la probabilité de repos artificiellement.
+  - sinon on enregistre l'action et on avance `t_cur += delta_k + 1` (=fin de l'action + 1)
+
+Parametres des types (valeurs fixes) :
+
+- type 0 : (Eff=0.5, Rew=1.0), delta=12
+- type 1 : (Eff=0.25, Rew=0.5), delta=6
+- type 2 : (Eff=0.125, Rew=0.25), delta=3
+
+### Agent 2 : Magneto-like (magneto_like_actions_with_value_learning)
+C'est un agent "type MAGNETO" avec apprentissage de valeur :
+
+- il maintient des valeurs internes `V_est[k]` (une par type)
+- il calcule un signal global `M` = "humeur" base sur l'historique (event_weighted sur Eff_hist/Rew_hist) avec un facteur d'oubli `gamma_decay`
+- il choisit entre "no action" et les 3 types via une softmax calibree :
+  - logits des actions ~ `a * V_est[k] + b * M`
+  - et un logit special pour "no action" calibré pour avoir $p(\text{no action})=1/2$ quand $M=0$
+- apres chaque action de type k, il met a jour :
+  - `target = r_val - e_val`
+  - `V_est[k] <- V_est[k] + alpha * (target - V_est[k])` avec `alpha = 1 - gamma_decay`
+- les contraintes temporelles sont les memes que Markov (fenetre locale + guards + `t_eff < t_rew`)
+
+### Bonus et temps de mesure (measurement + design_v5)
+On genere aussi des "bonus" (rewards additionnels) :
+
+- `bonuses_t` tire des temps dans des intervalles, avec une marge avant la fin (`before_margin`)
+- chaque bonus ajoute un evenement dans `Rew_` (et dans `Bonus_`)
+
+Puis on choisit des temps de mesure `t_meas` (fonction `sample_measurement_times`) :
+
+- environ la moitie des mesures juste apres des efforts (si `t_rew - t_eff > 0.5`)
+- environ la moitie juste apres des rewards (actions restantes + bonus)
+- le reste en uniforme pour completer
+- optionnel : on garde `meas_sources` pour savoir l'origine ("between_eff_rew", "after_rew", "uniform")
+
+Enfin `build_design_v5` assemble :
+
+- `t_meas = union(t_fixed, meas_times)`
+- `t = union(t_meas, Eff_times, Rew_times)`
+- `Eff_`, `Rew_`, `Bonus_`, `A_typed`, `K_types`
+
+Ce design est ensuite passe aux 6 modeles pour calculer les predictives (Laplace) et les bornes (Chernoff, etc.).
+
+# Résultats
+
+## Résumé du design
+
+### Simulation / scheduling
+- agents = "markov,magneto0, magneto1,...,magneto5"
+- t_max (free block) = 5400.0 (=1h30)
+- t_step (grid free) = 30.0
+- n_bonus (free) = 0 à 18 
+- n_t (free measures) = 0 à 18 
+
+::: {.callout-note}
+18 = 10% du nombre d'intervalles de 30 secondes.
+:::
+
+### Observation / noise
+- observation = "sigmoid"
+- sigma (obs noise) = 0.1
+- obs_temp_mean = 4.0
+- obs_temp_std = 0.9
+- obs_bias_mean = -0.0699
+- obs_bias_std = 0.46
+
+### Priors (gaussien) dans recode/models/h_actions.py
+
+- h0 ~ Normal(mu=0.3020, sigma=0.07)
+- W_time ~ Normal(mu=-0.0010, sigma=0.0003)
+- gamma ~ Normal(mu=0.3315, sigma=0.2)
+- W_eff ~ Normal(mu=-0.0051, sigma=0.008)
+- W_rew ~ Normal(mu=0.2536, sigma=0.05)
+- obs_temp ~ Normal(mu=1.0, sigma=0.0)
+- obs_bias ~ Normal(mu=0.0, sigma=0.0)
+
+::: {.callout-note} 
+- Les paramètres par défaut viennent des posteriors estimé par VBA sur mes expés (souvent réestimé à la hausse pour les std).
+- Le choix du sigma pour la fonction d'observation = estimer qu'on fait une erreur d'environ 10% sur son humeur sur l'échelle.
+- La fonction d'observation favorise les grandes échelles, donc les premiers modèles sans action_avg.
+:::
+
+## Impact des paramètres de simulation et design
+### Impact de n_t et n_bonus pour le reste des paramètres par défaut
+
+::: {.callout-note} 
+h0 = W_time = 0 pour les agents, mais pas pour le Laplace.
+:::
+
+### Impact du bruit d'observation
+### 

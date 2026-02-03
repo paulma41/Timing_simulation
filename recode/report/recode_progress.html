@@ -126,6 +126,29 @@ window.Quarto = {
   <li><a href="#objectif-1" id="toc-objectif-1" class="nav-link" data-scroll-target="#objectif-1"><span class="header-section-number">6.1</span> Objectif</a></li>
   <li><a href="#etapes-code" id="toc-etapes-code" class="nav-link" data-scroll-target="#etapes-code"><span class="header-section-number">6.2</span> Etapes (code)</a></li>
   <li><a href="#labels-de-code-2" id="toc-labels-de-code-2" class="nav-link" data-scroll-target="#labels-de-code-2"><span class="header-section-number">6.3</span> Labels de code</a></li>
+  <li><a href="#regles-de-simulation-design_v5-2-agents" id="toc-regles-de-simulation-design_v5-2-agents" class="nav-link" data-scroll-target="#regles-de-simulation-design_v5-2-agents"><span class="header-section-number">6.4</span> Regles de simulation (design_v5 + 2 agents)</a>
+  <ul class="collapse">
+  <li><a href="#grille-de-temps-et-fenetres" id="toc-grille-de-temps-et-fenetres" class="nav-link" data-scroll-target="#grille-de-temps-et-fenetres"><span class="header-section-number">6.4.1</span> Grille de temps et fenetres</a></li>
+  <li><a href="#representation-des-actions-et-des-evenements" id="toc-representation-des-actions-et-des-evenements" class="nav-link" data-scroll-target="#representation-des-actions-et-des-evenements"><span class="header-section-number">6.4.2</span> Representation des actions et des evenements</a></li>
+  <li><a href="#agent-1-markov-markov_actions_with_types" id="toc-agent-1-markov-markov_actions_with_types" class="nav-link" data-scroll-target="#agent-1-markov-markov_actions_with_types"><span class="header-section-number">6.4.3</span> Agent 1 : Markov (markov_actions_with_types)</a></li>
+  <li><a href="#agent-2-magneto-like-magneto_like_actions_with_value_learning" id="toc-agent-2-magneto-like-magneto_like_actions_with_value_learning" class="nav-link" data-scroll-target="#agent-2-magneto-like-magneto_like_actions_with_value_learning"><span class="header-section-number">6.4.4</span> Agent 2 : Magneto-like (magneto_like_actions_with_value_learning)</a></li>
+  <li><a href="#bonus-et-temps-de-mesure-measurement-design_v5" id="toc-bonus-et-temps-de-mesure-measurement-design_v5" class="nav-link" data-scroll-target="#bonus-et-temps-de-mesure-measurement-design_v5"><span class="header-section-number">6.4.5</span> Bonus et temps de mesure (measurement + design_v5)</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#résultats" id="toc-résultats" class="nav-link" data-scroll-target="#résultats"><span class="header-section-number">7</span> Résultats</a>
+  <ul class="collapse">
+  <li><a href="#résumé-du-design" id="toc-résumé-du-design" class="nav-link" data-scroll-target="#résumé-du-design"><span class="header-section-number">7.1</span> Résumé du design</a>
+  <ul class="collapse">
+  <li><a href="#simulation-scheduling" id="toc-simulation-scheduling" class="nav-link" data-scroll-target="#simulation-scheduling"><span class="header-section-number">7.1.1</span> Simulation / scheduling</a></li>
+  <li><a href="#observation-noise" id="toc-observation-noise" class="nav-link" data-scroll-target="#observation-noise"><span class="header-section-number">7.1.2</span> Observation / noise</a></li>
+  <li><a href="#priors-gaussien-dans-recodemodelsh_actions.py" id="toc-priors-gaussien-dans-recodemodelsh_actions.py" class="nav-link" data-scroll-target="#priors-gaussien-dans-recodemodelsh_actions.py"><span class="header-section-number">7.1.3</span> Priors (gaussien) dans recode/models/h_actions.py</a></li>
+  </ul></li>
+  <li><a href="#impact-des-paramètres-de-simulation-et-design" id="toc-impact-des-paramètres-de-simulation-et-design" class="nav-link" data-scroll-target="#impact-des-paramètres-de-simulation-et-design"><span class="header-section-number">7.2</span> Impact des paramètres de simulation et design</a>
+  <ul class="collapse">
+  <li><a href="#impact-de-n_t-et-n_bonus-pour-le-reste-des-paramètres-par-défaut" id="toc-impact-de-n_t-et-n_bonus-pour-le-reste-des-paramètres-par-défaut" class="nav-link" data-scroll-target="#impact-de-n_t-et-n_bonus-pour-le-reste-des-paramètres-par-défaut"><span class="header-section-number">7.2.1</span> Impact de n_t et n_bonus pour le reste des paramètres par défaut</a></li>
+  <li><a href="#impact-du-bruit-dobservation" id="toc-impact-du-bruit-dobservation" class="nav-link" data-scroll-target="#impact-du-bruit-dobservation"><span class="header-section-number">7.2.2</span> Impact du bruit d’observation</a></li>
+  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"><span class="header-section-number">7.2.3</span> </a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -301,8 +324,38 @@ C = \max_{s \in [0,1]} C_s
 <ol type="1">
 <li><p><strong>Definir les modeles h(t)</strong></p>
 <p>Les modeles sont definis dans <code>recode/models/h_actions.py</code> (kernels + update modes). Chaque modele est une fonction parametrique <code>Function</code> avec <code>parameters</code>, <code>sim_priors</code>, <code>eval(...)</code> et optionnellement <code>jacobian(...)</code>.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Dans le formalisme précédent, on a donc <span class="math inline">\(y := [h(t_1),...,h(t_{\text{max}})]\)</span>.</p>
+</div>
+</div>
+<ol start="2" type="1">
 <li><p><strong>Construire un design</strong></p>
 <p>Le design (inputs) contient <code>t_measure</code> ainsi que les evenements Eff_/Rew_ (et actions si necessaire). L’evaluation d’un modele fournit un vecteur <strong>y</strong> de taille = nombre de temps de mesure.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Dans le formalisme précédent, ça correspond à <span class="math inline">\(u\)</span>. Détails par la suite.</p>
+</div>
+</div>
+<ol start="3" type="1">
 <li><p><strong>Approximation de Laplace (predictive prior)</strong></p>
 <ul>
 <li><strong>Moyenne predictive</strong> :</li>
@@ -374,7 +427,7 @@ C = \max_{s \in [0,1]} C_s
 <h3 data-number="3.3.1" class="anchored" data-anchor-id="formule-générale"><span class="header-section-number">3.3.1</span> Formule générale</h3>
 <p>Pour un temps évalué <span class="math inline">\(t\)</span> (ou son version snappée <span class="math inline">\(\tau(t)\)</span>),</p>
 <p><span class="math display">\[
-h(t) = W_{eff} \sum_{k: t^e_k \le t} e_k \, \gamma^{(t - t^e_k)} + W_{rew} \sum_{k: t^r_k \le t} r_k \, \gamma^{(t - t^r_k)}
+h(t) = W_{eff} \sum_{k: t^e_k \le t} e_k \, \gamma^{(t - t^e_k)} + W_{rew} \sum_{k: t^r_k \le t} r_k \, \gamma^{(t - t^r_k)} + h0 + W_{time}\times t
 \]</span></p>
 </section>
 <section id="variantes-update-modes" class="level3" data-number="3.3.2">
@@ -396,7 +449,7 @@ h(t) = W_{eff} \sum_{k: t^e_k \le t} e_k \, \gamma^{(t - t^e_k)} + W_{rew} \sum_
 <h2 data-number="3.4" class="anchored" data-anchor-id="kernel-2-action_avg"><span class="header-section-number">3.4</span> Kernel 2 — action_avg</h2>
 <p>Ce kernel moyenne les contributions par type d’action. Pour <span class="math inline">\(K\)</span> types,</p>
 <p><span class="math display">\[
-h(t) = \frac{1}{K} \sum_{k=1}^K \left( W_{eff} \sum_{i\in\mathcal{E}_k} e_i \, \gamma^{(t_k - t^e_i)} + W_{rew} \sum_{i\in\mathcal{R}_k} r_i \, \gamma^{(t_k - t^r_i)} \right)
+h(t) = \frac{1}{K} \sum_{k=1}^K \left( W_{eff} \sum_{i\in\mathcal{E}_k} e_i \, \gamma^{(t_k - t^e_i)} + W_{rew} \sum_{i\in\mathcal{R}_k} r_i \, \gamma^{(t_k - t^r_i)} \right) + h0 + W_{time}\times t
 \]</span></p>
 <p>où <span class="math inline">\(t_k\)</span> est le temps “snappé” spécifique au type <span class="math inline">\(k\)</span>.</p>
 <section id="variantes-update-modes-1" class="level3" data-number="3.4.1">
@@ -543,6 +596,198 @@ J_{ij} = \frac{\partial f_i(\theta)}{\partial \theta_j}
 <li><p>Orchestration : <code>laplace_predictive(...)</code></p></li>
 <li><p>Fichier : <code>recode/design_optimizer/laplace.py</code></p></li>
 </ul>
+</section>
+<section id="regles-de-simulation-design_v5-2-agents" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="regles-de-simulation-design_v5-2-agents"><span class="header-section-number">6.4</span> Regles de simulation (design_v5 + 2 agents)</h2>
+<section id="grille-de-temps-et-fenetres" class="level3" data-number="6.4.1">
+<h3 data-number="6.4.1" class="anchored" data-anchor-id="grille-de-temps-et-fenetres"><span class="header-section-number">6.4.1</span> Grille de temps et fenetres</h3>
+<p>On definit une grille de temps fixe <code>t_fixed = [t0, t1, ..., tN]</code> (pas <code>t_step</code>), qui decoupe l’experience en intervalles <code>[t_fixed[m], t_fixed[m+1]]</code>.</p>
+<p>Dans chaque intervalle, on autorise des actions uniquement dans une fenetre interne :</p>
+<ul>
+<li><code>start_abs = t_fixed[m]</code></li>
+<li><code>end_abs = t_fixed[m+1]</code></li>
+<li><code>local_start = start_abs + 2.0</code></li>
+<li><code>local_end = min(start_abs + 29.0, end_abs - guard_after_t)</code></li>
+</ul>
+<p><code>guard_after_t</code> (par defaut 0.5) impose un “buffer” pour eviter des evenements trop proches du bord droit.</p>
+</section>
+<section id="representation-des-actions-et-des-evenements" class="level3" data-number="6.4.2">
+<h3 data-number="6.4.2" class="anchored" data-anchor-id="representation-des-actions-et-des-evenements"><span class="header-section-number">6.4.2</span> Representation des actions et des evenements</h3>
+<p>Chaque action est definie par un type <code>type_idx</code> et deux evenements :</p>
+<ul>
+<li>effort : <code>(e_val, t_eff)</code></li>
+<li>reward : <code>(r_val, t_rew)</code> avec <code>t_eff &lt; t_rew</code></li>
+</ul>
+<p>Dans le design, on stocke :</p>
+<ul>
+<li><code>Eff_ = [(e_val, t_eff), ...]</code></li>
+<li><code>Rew_ = [(r_val, t_rew), ...]</code> (inclut aussi les bonus)</li>
+<li><code>A_typed = [(type_idx, (e_val, t_eff), (r_val, t_rew)), ...]</code></li>
+<li><code>K_types = nombre de types d'actions</code></li>
+</ul>
+</section>
+<section id="agent-1-markov-markov_actions_with_types" class="level3" data-number="6.4.3">
+<h3 data-number="6.4.3" class="anchored" data-anchor-id="agent-1-markov-markov_actions_with_types"><span class="header-section-number">6.4.3</span> Agent 1 : Markov (markov_actions_with_types)</h3>
+<p>Regle d’action (par intervalle) :</p>
+<ul>
+<li>on avance dans la fenetre locale avec un temps courant <code>t_cur</code></li>
+<li>a chaque “pas”, on tire :
+<ul>
+<li>proba 1/2 : ne rien faire -&gt; <code>t_cur += 1.0</code></li>
+<li>proba 1/6 : action type 0</li>
+<li>proba 1/6 : action type 1</li>
+<li>proba 1/6 : action type 2</li>
+</ul></li>
+<li>si action de type <code>k</code> :
+<ul>
+<li><code>t_rew = t_cur + delta_k</code></li>
+<li><code>t_eff = max(start_abs + guard_after_t, t_rew - delta_k)</code></li>
+<li>si contraintes non respectees (bord, ordre, chevauchement), on skippe l’action =&gt; Cela simplifie la boucle, mais en vrai ça augment la probabilité de repos artificiellement.</li>
+<li>sinon on enregistre l’action et on avance <code>t_cur += delta_k + 1</code> (=fin de l’action + 1)</li>
+</ul></li>
+</ul>
+<p>Parametres des types (valeurs fixes) :</p>
+<ul>
+<li>type 0 : (Eff=0.5, Rew=1.0), delta=12</li>
+<li>type 1 : (Eff=0.25, Rew=0.5), delta=6</li>
+<li>type 2 : (Eff=0.125, Rew=0.25), delta=3</li>
+</ul>
+</section>
+<section id="agent-2-magneto-like-magneto_like_actions_with_value_learning" class="level3" data-number="6.4.4">
+<h3 data-number="6.4.4" class="anchored" data-anchor-id="agent-2-magneto-like-magneto_like_actions_with_value_learning"><span class="header-section-number">6.4.4</span> Agent 2 : Magneto-like (magneto_like_actions_with_value_learning)</h3>
+<p>C’est un agent “type MAGNETO” avec apprentissage de valeur :</p>
+<ul>
+<li>il maintient des valeurs internes <code>V_est[k]</code> (une par type)</li>
+<li>il calcule un signal global <code>M</code> = “humeur” base sur l’historique (event_weighted sur Eff_hist/Rew_hist) avec un facteur d’oubli <code>gamma_decay</code></li>
+<li>il choisit entre “no action” et les 3 types via une softmax calibree :
+<ul>
+<li>logits des actions ~ <code>a * V_est[k] + b * M</code></li>
+<li>et un logit special pour “no action” calibré pour avoir <span class="math inline">\(p(\text{no action})=1/2\)</span> quand <span class="math inline">\(M=0\)</span></li>
+</ul></li>
+<li>apres chaque action de type k, il met a jour :
+<ul>
+<li><code>target = r_val - e_val</code></li>
+<li><code>V_est[k] &lt;- V_est[k] + alpha * (target - V_est[k])</code> avec <code>alpha = 1 - gamma_decay</code></li>
+</ul></li>
+<li>les contraintes temporelles sont les memes que Markov (fenetre locale + guards + <code>t_eff &lt; t_rew</code>)</li>
+</ul>
+</section>
+<section id="bonus-et-temps-de-mesure-measurement-design_v5" class="level3" data-number="6.4.5">
+<h3 data-number="6.4.5" class="anchored" data-anchor-id="bonus-et-temps-de-mesure-measurement-design_v5"><span class="header-section-number">6.4.5</span> Bonus et temps de mesure (measurement + design_v5)</h3>
+<p>On genere aussi des “bonus” (rewards additionnels) :</p>
+<ul>
+<li><code>bonuses_t</code> tire des temps dans des intervalles, avec une marge avant la fin (<code>before_margin</code>)</li>
+<li>chaque bonus ajoute un evenement dans <code>Rew_</code> (et dans <code>Bonus_</code>)</li>
+</ul>
+<p>Puis on choisit des temps de mesure <code>t_meas</code> (fonction <code>sample_measurement_times</code>) :</p>
+<ul>
+<li>environ la moitie des mesures juste apres des efforts (si <code>t_rew - t_eff &gt; 0.5</code>)</li>
+<li>environ la moitie juste apres des rewards (actions restantes + bonus)</li>
+<li>le reste en uniforme pour completer</li>
+<li>optionnel : on garde <code>meas_sources</code> pour savoir l’origine (“between_eff_rew”, “after_rew”, “uniform”)</li>
+</ul>
+<p>Enfin <code>build_design_v5</code> assemble :</p>
+<ul>
+<li><code>t_meas = union(t_fixed, meas_times)</code></li>
+<li><code>t = union(t_meas, Eff_times, Rew_times)</code></li>
+<li><code>Eff_</code>, <code>Rew_</code>, <code>Bonus_</code>, <code>A_typed</code>, <code>K_types</code></li>
+</ul>
+<p>Ce design est ensuite passe aux 6 modeles pour calculer les predictives (Laplace) et les bornes (Chernoff, etc.).</p>
+</section>
+</section>
+</section>
+<section id="résultats" class="level1" data-number="7">
+<h1 data-number="7"><span class="header-section-number">7</span> Résultats</h1>
+<section id="résumé-du-design" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="résumé-du-design"><span class="header-section-number">7.1</span> Résumé du design</h2>
+<section id="simulation-scheduling" class="level3" data-number="7.1.1">
+<h3 data-number="7.1.1" class="anchored" data-anchor-id="simulation-scheduling"><span class="header-section-number">7.1.1</span> Simulation / scheduling</h3>
+<ul>
+<li>agents = “markov,magneto0, magneto1,…,magneto5”</li>
+<li>t_max (free block) = 5400.0 (=1h30)</li>
+<li>t_step (grid free) = 30.0</li>
+<li>n_bonus (free) = 0 à 18</li>
+<li>n_t (free measures) = 0 à 18</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>18 = 10% du nombre d’intervalles de 30 secondes.</p>
+</div>
+</div>
+</section>
+<section id="observation-noise" class="level3" data-number="7.1.2">
+<h3 data-number="7.1.2" class="anchored" data-anchor-id="observation-noise"><span class="header-section-number">7.1.2</span> Observation / noise</h3>
+<ul>
+<li>observation = “sigmoid”</li>
+<li>sigma (obs noise) = 0.1</li>
+<li>obs_temp_mean = 4.0</li>
+<li>obs_temp_std = 0.9</li>
+<li>obs_bias_mean = -0.0699</li>
+<li>obs_bias_std = 0.46</li>
+</ul>
+</section>
+<section id="priors-gaussien-dans-recodemodelsh_actions.py" class="level3" data-number="7.1.3">
+<h3 data-number="7.1.3" class="anchored" data-anchor-id="priors-gaussien-dans-recodemodelsh_actions.py"><span class="header-section-number">7.1.3</span> Priors (gaussien) dans recode/models/h_actions.py</h3>
+<ul>
+<li>h0 ~ Normal(mu=0.3020, sigma=0.07)</li>
+<li>W_time ~ Normal(mu=-0.0010, sigma=0.0003)</li>
+<li>gamma ~ Normal(mu=0.3315, sigma=0.2)</li>
+<li>W_eff ~ Normal(mu=-0.0051, sigma=0.008)</li>
+<li>W_rew ~ Normal(mu=0.2536, sigma=0.05)</li>
+<li>obs_temp ~ Normal(mu=1.0, sigma=0.0)</li>
+<li>obs_bias ~ Normal(mu=0.0, sigma=0.0)</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>Les paramètres par défaut viennent des posteriors estimé par VBA sur mes expés (souvent réestimé à la hausse pour les std).</li>
+<li>Le choix du sigma pour la fonction d’observation = estimer qu’on fait une erreur d’environ 10% sur son humeur sur l’échelle.</li>
+<li>La fonction d’observation favorise les grandes échelles, donc les premiers modèles sans action_avg.</li>
+</ul>
+</div>
+</div>
+</section>
+</section>
+<section id="impact-des-paramètres-de-simulation-et-design" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="impact-des-paramètres-de-simulation-et-design"><span class="header-section-number">7.2</span> Impact des paramètres de simulation et design</h2>
+<section id="impact-de-n_t-et-n_bonus-pour-le-reste-des-paramètres-par-défaut" class="level3" data-number="7.2.1">
+<h3 data-number="7.2.1" class="anchored" data-anchor-id="impact-de-n_t-et-n_bonus-pour-le-reste-des-paramètres-par-défaut"><span class="header-section-number">7.2.1</span> Impact de n_t et n_bonus pour le reste des paramètres par défaut</h3>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>h0 = W_time = 0 pour les agents, mais pas pour le Laplace.</p>
+</div>
+</div>
+</section>
+<section id="impact-du-bruit-dobservation" class="level3" data-number="7.2.2">
+<h3 data-number="7.2.2" class="anchored" data-anchor-id="impact-du-bruit-dobservation"><span class="header-section-number">7.2.2</span> Impact du bruit d’observation</h3>
+</section>
+<section id="section" class="level3" data-number="7.2.3">
+<h3 data-number="7.2.3" class="anchored" data-anchor-id="section"><span class="header-section-number">7.2.3</span> </h3>
+</section>
 </section>
 </section>
 
